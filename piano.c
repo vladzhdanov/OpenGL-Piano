@@ -35,7 +35,7 @@
 #include <SDL/SDL.h>
 #include <SDL/SDL_mixer.h>
 #include "CSCIx229.h"
-int axes=0;       //  Display axes
+int axes=1;       //  Display axes
 int mode=1;       //  Projection mode
 int side=0;       //  Two sided mode
 int ntex=1;       //  Texture mode
@@ -47,9 +47,9 @@ int at0=100;      //  Constant  attenuation %
 int at1=0;        //  Linear    attenuation %
 int at2=0;        //  Quadratic attenuation %
 int fov=53;       //  Field of view (for perspective)
-int light=1;      //  Lighting
+int light=0;      //  Lighting
 double asp=1;     //  Aspect ratio
-double dim=8;     //  Size of world
+double dim=4;     //  Size of world
 // Light values
 int num       =   1;  // Number of quads
 int inf       =   0;  // Infinite distance light
@@ -65,12 +65,767 @@ float X       = 0;    // Light X position
 float Y       = 0;    // Light Y position
 float Z       = 1;    // Light Z position
 
-/*
- *  Draw vertex in polar coordinates with normal
- */
+
 static void Vertex(double th,double ph)
 {
    glVertex3d(Sin(th)*Cos(ph),Cos(th)*Cos(ph),Sin(ph));
+}
+
+static void pianoKey(int num,
+      double x, double y, double z,
+      double dx, double dy, double dz, 
+      double th, double ph){
+
+  glPushMatrix();
+  glTranslated(x,y,z);
+  glScaled(dx,dy,dz);
+
+  // First key is special 
+  if(num == 1){
+    num = -1;
+  }
+  // Except for the very first and last key,
+  // the piano repeats the same pattern of notes
+  // every octave (12 steps)
+  if(num != 88 && num != -1 && num >= 12){
+    num %= 12;
+  }
+  switch(num){
+    // White key with hole on right
+    // case 1:
+    case 4:
+    case 9:
+      glColor3f(1, 1, 1);
+      glBegin(GL_QUADS);
+      // Bottom
+      glNormal3f(0, -1, 0);
+      glVertex3d(0,    0,  0);
+      glVertex3d(.5,   0,  0);
+      glVertex3d(.5,   0, -6);
+      glVertex3d(0,    0, -6);
+
+      glNormal3f(0, -1, 0);
+      glVertex3d(.5,   0,  0);
+      glVertex3d(.875, 0,  0);
+      glVertex3d(.875, 0, -2);
+      glVertex3d(.5,   0, -2);
+
+      // Sides
+      glNormal3f(0, 0, 1);
+      glVertex3d(0,       0,  0);
+      glVertex3d(.875,    0,  0);
+      glVertex3d(.875, .875,  0);
+      glVertex3d(0,    .875,  0);
+
+      glNormal3f(-1, 0, 0);
+      glVertex3d(0,    0,  0);
+      glVertex3d(0,    0, -6);
+      glVertex3d(0, .875, -6);
+      glVertex3d(0, .875,  0);
+
+      glNormal3f(0, 0, -1);
+      glVertex3d(0,     0, -6);
+      glVertex3d(0,  .875, -6);
+      glVertex3d(.5, .875, -6);
+      glVertex3d(.5,    0, -6);
+
+      glNormal3f(1, 0, 0);
+      glVertex3d(.5,    0, -6);
+      glVertex3d(.5, .875, -6);
+      glVertex3d(.5, .875, -2);
+      glVertex3d(.5,    0, -2);
+
+      glNormal3f(0, 0, -1);
+      glVertex3d(.5,      0, -2);
+      glVertex3d(.5,   .875, -2);
+      glVertex3d(.875, .875, -2);
+      glVertex3d(.875,    0, -2);
+
+      glNormal3f(1, 0, 0);
+      glVertex3d(.875,    0, -2);
+      glVertex3d(.875, .875, -2);
+      glVertex3d(.875, .875,  0);
+      glVertex3d(.875,    0,  0);
+
+      // Top
+      glNormal3f(0, 1, 0);
+      glVertex3d(0,  .875,  0);
+      glVertex3d(.5, .875,  0);
+      glVertex3d(.5, .875, -6);
+      glVertex3d(0,  .875, -6);
+
+      glNormal3f(0, 1, 0);
+      glVertex3d(.5,   .875,  0);
+      glVertex3d(.875, .875,  0);
+      glVertex3d(.875, .875, -2);
+      glVertex3d(.5,   .875, -2);
+      glEnd();
+      break;
+
+     // Black key
+    case 0:
+    case 2:
+    case 5:
+    case 7:
+    case 10:
+      glColor3f(.2, .2, .2);
+      glBegin(GL_QUADS);
+
+      // Bottom
+      glNormal3f(0, -1, 0);
+      glVertex3d(0,     0, -2.0625);      
+      glVertex3d(.4375, 0, -2.0625);
+      glVertex3d(.4375, 0, -6);
+      glVertex3d(0,     0, -6);
+
+      // Sides
+      glNormal3f(0, 0, 1);
+      glVertex3d(0,        0, -2.0625);
+      glVertex3d(.4375,    0, -2.0625);
+      glVertex3d(.4375, .875, -2.0625);
+      glVertex3d(0,     .875, -2.0625);
+
+      glNormal3f(0, 0, -1);
+      glVertex3d(0,        0, -6);
+      glVertex3d(.4375,    0, -6);
+      glVertex3d(.4375, .875, -6);
+      glVertex3d(0,     .875, -6);
+
+      glNormal3f(-1, 0, 0);
+      glVertex3d(0,    0, -2.0625);
+      glVertex3d(0,    0, -6);
+      glVertex3d(0, .875, -6);
+      glVertex3d(0, .875, -2.0625);      
+
+      glNormal3f(1, 0, 0);
+      glVertex3d(.4375,    0, -2.0625);
+      glVertex3d(.4375,    0, -6);
+      glVertex3d(.4375, .875, -6);
+      glVertex3d(.4375, .875, -2.0625);  
+      
+      // Slanted Sides
+      glNormal3f(0, 1, 8);
+      glVertex3d(     0,  .875, -2.0625);
+      glVertex3d(.03125, 1.125, -2.09375);
+      glVertex3d(.40625, 1.125, -2.09375);
+      glVertex3d( .4375,  .875, -2.0625);
+
+      glNormal3f(-8, 1, 0);
+      glVertex3d(     0,  .875, -2.0625);
+      glVertex3d(.03125, 1.125, -2.09375);
+      glVertex3d(.03125, 1.125, -5.96875);
+      glVertex3d(     0,  .875, -6);
+
+      glNormal3f(8, 1, 0);
+      glVertex3d( .4375,  .875, -2.0625);
+      glVertex3d(.40625, 1.125, -2.09375);
+      glVertex3d(.40625, 1.125, -5.96875);
+      glVertex3d( .4375,  .875, -6);
+
+      glNormal3f(0, 1, -8);
+      glVertex3d(     0,  .875, -6);
+      glVertex3d(.03125, 1.125, -5.96875);
+      glVertex3d(.40625, 1.125, -5.96875);
+      glVertex3d( .4375,  .875, -6);
+
+      // Top
+      glNormal3f(0, 1, 0);
+      glVertex3d(.03125,   1.125, -2.09375);
+      glVertex3d(.40625,   1.125, -2.09375);
+      glVertex3d(.40625,   1.125, -5.96875);
+      glVertex3d(.03125,   1.125, -5.96875);
+
+      glEnd();
+      break;
+
+    // White key with hole on left
+    case 3:
+    case 8:
+      glColor3f(1, 1, 1);
+      glBegin(GL_QUADS);
+      // Bottom
+      glNormal3f(0, -1, 0);
+      glVertex3d(.375,    0,  0);
+      glVertex3d(.875,    0,  0);
+      glVertex3d(.875,    0, -6);
+      glVertex3d(.375,    0, -6);
+
+      glNormal3f(0, -1, 0);
+      glVertex3d(0,    0,  0);
+      glVertex3d(.375, 0,  0);
+      glVertex3d(.375, 0, -2);
+      glVertex3d(0,    0, -2);
+
+      // Sides
+      glNormal3f(0, 0, 1);
+      glVertex3d(0,       0,  0);
+      glVertex3d(.875,    0,  0);
+      glVertex3d(.875, .875,  0);
+      glVertex3d(0,    .875,  0);
+
+      glNormal3f(0, 0, -1);
+      glVertex3d(.375,     0, -6);
+      glVertex3d(.375,  .875, -6);
+      glVertex3d(.875, .875, -6);
+      glVertex3d(.875,    0, -6);
+
+      glNormal3f(0, 0, -1);
+      glVertex3d(0,      0, -2);
+      glVertex3d(0,   .875, -2);
+      glVertex3d(.375, .875, -2);
+      glVertex3d(.375,    0, -2);
+
+      glNormal3f(1, 0, 0);
+      glVertex3d(.875,    0,  0);
+      glVertex3d(.875,    0, -6);
+      glVertex3d(.875, .875, -6);
+      glVertex3d(.875, .875,  0);
+
+      glNormal3f(-1, 0, 0);
+      glVertex3d(.375,    0, -6);
+      glVertex3d(.375, .875, -6);
+      glVertex3d(.375, .875, -2);
+      glVertex3d(.375,    0, -2);
+
+      glNormal3f(-1, 0, 0);
+      glVertex3d(0,    0, -2);
+      glVertex3d(0, .875, -2);
+      glVertex3d(0, .875,  0);
+      glVertex3d(0,    0,  0);
+
+      // Top
+      glNormal3f(0, 1, 0);
+      glVertex3d(.375,  .875,  0);
+      glVertex3d(.875,  .875,  0);
+      glVertex3d(.875,  .875, -6);
+      glVertex3d(.375,  .875, -6);
+
+      glNormal3f(0, 1, 0);
+      glVertex3d(0,     .875,  0);
+      glVertex3d(.375,  .875,  0);
+      glVertex3d(.375,  .875, -2);
+      glVertex3d(0,     .875, -2);
+      glEnd();
+      break;
+
+    // White key with holes on both sides
+    // Hole on left is larger
+    case 1:
+      glColor3f(1, 1, 1);
+      glBegin(GL_QUADS);
+      // Bottom
+      glNormal3f(0, -1, 0);
+      glVertex3d(.25,  0,  0);
+      glVertex3d(.75,    0,  0);
+      glVertex3d(.75,    0, -6);
+      glVertex3d(.25,  0, -6);
+
+      glNormal3f(0, -1, 0);
+      glVertex3d(0,    0,  0);
+      glVertex3d(.25, 0,  0);
+      glVertex3d(.25, 0, -2);
+      glVertex3d(0,    0, -2);
+
+      glNormal3f(0, -1, 0);
+      glVertex3d(.75,    0,  0);
+      glVertex3d(.875,  0,  0);
+      glVertex3d(.875,  0, -2);
+      glVertex3d(.75,    0, -2);
+
+      // Top
+      glNormal3f(0, 1, 0);
+      glVertex3d(.25, .875,  0);
+      glVertex3d(.75,  .875,  0);
+      glVertex3d(.75,  .875, -6);
+      glVertex3d(.25, .875, -6);
+
+      glNormal3f(0, 1, 0);
+      glVertex3d(0,    .875,  0);
+      glVertex3d(.25, .875,  0);
+      glVertex3d(.25, .875, -2);
+      glVertex3d(0,    .875, -2);
+
+      glNormal3f(0, 1, 0);
+      glVertex3d(.75,  .875,  0);
+      glVertex3d(.875, .875,  0);
+      glVertex3d(.875, .875, -2);
+      glVertex3d(.75,  .875, -2);
+
+      // Sides
+      glNormal3f(0, 0, 1);
+      glVertex3d(0,       0, 0);
+      glVertex3d(.875,    0, 0);
+      glVertex3d(.875, .875, 0);
+      glVertex3d(0,    .875, 0);
+
+      glNormal3f(0, 0, -1);
+      glVertex3d(.25,    0, -6);
+      glVertex3d(.75,     0, -6);
+      glVertex3d(.75,  .875, -6);
+      glVertex3d(.25, .875, -6);
+
+      glNormal3f(0, 0, -1);
+      glVertex3d( 0,      0, -2);
+      glVertex3d(.25,    0, -2);
+      glVertex3d(.25, .875, -2);
+      glVertex3d( 0,   .875, -2);
+
+      glNormal3f(0, 0, -1);
+      glVertex3d(.75,      0, -2);
+      glVertex3d(.875,    0, -2);
+      glVertex3d(.875, .875, -2);
+      glVertex3d(.75,   .875, -2);
+
+      glNormal3f(-1, 0, 0);
+      glVertex3d(0,    0,  0);
+      glVertex3d(0,    0, -2);
+      glVertex3d(0, .875, -2);
+      glVertex3d(0, .875,  0);
+
+      glNormal3f(-1, 0, 0);
+      glVertex3d(.25,    0, -2);
+      glVertex3d(.25,    0, -6);
+      glVertex3d(.25, .875, -6);
+      glVertex3d(.25, .875, -2);
+
+      glNormal3f(1, 0, 0);
+      glVertex3d(.875,    0,  0);
+      glVertex3d(.875,    0, -2);
+      glVertex3d(.875, .875, -2);
+      glVertex3d(.875, .875,  0);
+
+      glNormal3f(1, 0, 0);
+      glVertex3d(.75,    0, -2);
+      glVertex3d(.75,    0, -6);
+      glVertex3d(.75, .875, -6);
+      glVertex3d(.75, .875, -2);
+
+      glEnd(); 
+      break;
+
+    // White key with holes on both sides
+    // Both holes same size
+    case 6:
+      glColor3f(1, 1, 1);
+      glBegin(GL_QUADS);
+      // Bottom
+      glNormal3f(0, -1, 0);
+      glVertex3d(.125,  0,  0);
+      glVertex3d(.75,    0,  0);
+      glVertex3d(.75,    0, -6);
+      glVertex3d(.125,  0, -6);
+
+      glNormal3f(0, -1, 0);
+      glVertex3d(0,    0,  0);
+      glVertex3d(.125, 0,  0);
+      glVertex3d(.125, 0, -2);
+      glVertex3d(0,    0, -2);
+
+      glNormal3f(0, -1, 0);
+      glVertex3d(.75,    0,  0);
+      glVertex3d(.875,  0,  0);
+      glVertex3d(.875,  0, -2);
+      glVertex3d(.75,    0, -2);
+
+      // Top
+      glNormal3f(0, 1, 0);
+      glVertex3d(.125, .875,  0);
+      glVertex3d(.75,  .875,  0);
+      glVertex3d(.75,  .875, -6);
+      glVertex3d(.125, .875, -6);
+
+      glNormal3f(0, 1, 0);
+      glVertex3d(0,    .875,  0);
+      glVertex3d(.125, .875,  0);
+      glVertex3d(.125, .875, -2);
+      glVertex3d(0,    .875, -2);
+
+      glNormal3f(0, 1, 0);
+      glVertex3d(.75,  .875,  0);
+      glVertex3d(.875, .875,  0);
+      glVertex3d(.875, .875, -2);
+      glVertex3d(.75,  .875, -2);
+
+      // Sides
+      glNormal3f(0, 0, 1);
+      glVertex3d(0,       0, 0);
+      glVertex3d(.875,    0, 0);
+      glVertex3d(.875, .875, 0);
+      glVertex3d(0,    .875, 0);
+
+      glNormal3f(0, 0, -1);
+      glVertex3d(.125,    0, -6);
+      glVertex3d(.75,     0, -6);
+      glVertex3d(.75,  .875, -6);
+      glVertex3d(.125, .875, -6);
+
+      glNormal3f(0, 0, -1);
+      glVertex3d( 0,      0, -2);
+      glVertex3d(.125,    0, -2);
+      glVertex3d(.125, .875, -2);
+      glVertex3d( 0,   .875, -2);
+
+      glNormal3f(0, 0, -1);
+      glVertex3d(.75,      0, -2);
+      glVertex3d(.875,    0, -2);
+      glVertex3d(.875, .875, -2);
+      glVertex3d(.75,   .875, -2);
+
+      glNormal3f(-1, 0, 0);
+      glVertex3d(0,    0,  0);
+      glVertex3d(0,    0, -2);
+      glVertex3d(0, .875, -2);
+      glVertex3d(0, .875,  0);
+
+      glNormal3f(-1, 0, 0);
+      glVertex3d(.125,    0, -2);
+      glVertex3d(.125,    0, -6);
+      glVertex3d(.125, .875, -6);
+      glVertex3d(.125, .875, -2);
+
+      glNormal3f(1, 0, 0);
+      glVertex3d(.875,    0,  0);
+      glVertex3d(.875,    0, -2);
+      glVertex3d(.875, .875, -2);
+      glVertex3d(.875, .875,  0);
+
+      glNormal3f(1, 0, 0);
+      glVertex3d(.75,    0, -2);
+      glVertex3d(.75,    0, -6);
+      glVertex3d(.75, .875, -6);
+      glVertex3d(.75, .875, -2);
+
+      glEnd(); 
+      break;
+
+    // White key with holes on both sides
+    // Hole on right is larger
+    case 11: 
+      glColor3f(1, 1, 1);
+      glBegin(GL_QUADS);
+      // Bottom
+      glNormal3f(0, -1, 0);
+      glVertex3d(.125,  0,  0);
+      glVertex3d(.625,    0,  0);
+      glVertex3d(.625,    0, -6);
+      glVertex3d(.125,  0, -6);
+
+      glNormal3f(0, -1, 0);
+      glVertex3d(0,    0,  0);
+      glVertex3d(.125, 0,  0);
+      glVertex3d(.125, 0, -2);
+      glVertex3d(0,    0, -2);
+
+      glNormal3f(0, -1, 0);
+      glVertex3d(.625,    0,  0);
+      glVertex3d(.875,  0,  0);
+      glVertex3d(.875,  0, -2);
+      glVertex3d(.625,    0, -2);
+
+      // Top
+      glNormal3f(0, 1, 0);
+      glVertex3d(.125, .875,  0);
+      glVertex3d(.625,  .875,  0);
+      glVertex3d(.625,  .875, -6);
+      glVertex3d(.125, .875, -6);
+
+      glNormal3f(0, 1, 0);
+      glVertex3d(0,    .875,  0);
+      glVertex3d(.125, .875,  0);
+      glVertex3d(.125, .875, -2);
+      glVertex3d(0,    .875, -2);
+
+      glNormal3f(0, 1, 0);
+      glVertex3d(.625,  .875,  0);
+      glVertex3d(.875, .875,  0);
+      glVertex3d(.875, .875, -2);
+      glVertex3d(.625,  .875, -2);
+
+      // Sides
+      glNormal3f(0, 0, 1);
+      glVertex3d(0,       0, 0);
+      glVertex3d(.875,    0, 0);
+      glVertex3d(.875, .875, 0);
+      glVertex3d(0,    .875, 0);
+
+      glNormal3f(0, 0, -1);
+      glVertex3d(.125,    0, -6);
+      glVertex3d(.625,     0, -6);
+      glVertex3d(.625,  .875, -6);
+      glVertex3d(.125, .875, -6);
+
+      glNormal3f(0, 0, -1);
+      glVertex3d( 0,      0, -2);
+      glVertex3d(.125,    0, -2);
+      glVertex3d(.125, .875, -2);
+      glVertex3d( 0,   .875, -2);
+
+      glNormal3f(0, 0, -1);
+      glVertex3d(.625,      0, -2);
+      glVertex3d(.875,    0, -2);
+      glVertex3d(.875, .875, -2);
+      glVertex3d(.625,   .875, -2);
+
+      glNormal3f(-1, 0, 0);
+      glVertex3d(0,    0,  0);
+      glVertex3d(0,    0, -2);
+      glVertex3d(0, .875, -2);
+      glVertex3d(0, .875,  0);
+
+      glNormal3f(-1, 0, 0);
+      glVertex3d(.125,    0, -2);
+      glVertex3d(.125,    0, -6);
+      glVertex3d(.125, .875, -6);
+      glVertex3d(.125, .875, -2);
+
+      glNormal3f(1, 0, 0);
+      glVertex3d(.875,    0,  0);
+      glVertex3d(.875,    0, -2);
+      glVertex3d(.875, .875, -2);
+      glVertex3d(.875, .875,  0);
+
+      glNormal3f(1, 0, 0);
+      glVertex3d(.625,    0, -2);
+      glVertex3d(.625,    0, -6);
+      glVertex3d(.625, .875, -6);
+      glVertex3d(.625, .875, -2);
+
+      glEnd(); 
+      break;
+
+    // Special Keys
+    // Key 1: Smaller hole on right side
+    case -1:
+    glColor3f(1, 1, 1);
+      glBegin(GL_QUADS);
+      // Bottom
+      glNormal3f(0, -1, 0);
+      glVertex3d(0,     0,  0);
+      glVertex3d(.75,    0,  0);
+      glVertex3d(.75,    0, -6);
+      glVertex3d(0,     0, -6);
+
+      glNormal3f(0, -1, 0);
+      glVertex3d(.75,    0,  0);
+      glVertex3d(.875,  0,  0);
+      glVertex3d(.875,  0, -2);
+      glVertex3d(.75,    0, -2);
+
+      // Top
+      glNormal3f(0, 1, 0);
+      glVertex3d(0,    .875,  0);
+      glVertex3d(.75,  .875,  0);
+      glVertex3d(.75,  .875, -6);
+      glVertex3d(0,    .875, -6);
+
+      glNormal3f(0, 1, 0);
+      glVertex3d(.75,  .875,  0);
+      glVertex3d(.875, .875,  0);
+      glVertex3d(.875, .875, -2);
+      glVertex3d(.75,  .875, -2);
+
+      // Sides
+      glNormal3f(0, 0, 1);
+      glVertex3d(0,       0, 0);
+      glVertex3d(.875,    0, 0);
+      glVertex3d(.875, .875, 0);
+      glVertex3d(0,    .875, 0);
+
+      glNormal3f(0, 0, -1);
+      glVertex3d(0,       0, -6);
+      glVertex3d(.75,     0, -6);
+      glVertex3d(.75,  .875, -6);
+      glVertex3d(0,    .875, -6);
+
+      glNormal3f(0, 0, -1);
+      glVertex3d(.75,      0, -2);
+      glVertex3d(.875,    0, -2);
+      glVertex3d(.875, .875, -2);
+      glVertex3d(.75,   .875, -2);
+
+      glNormal3f(-1, 0, 0);
+      glVertex3d(0,    0,  0);
+      glVertex3d(0,    0, -6);
+      glVertex3d(0, .875, -6);
+      glVertex3d(0, .875,  0);
+
+      glNormal3f(1, 0, 0);
+      glVertex3d(.875,    0,  0);
+      glVertex3d(.875,    0, -2);
+      glVertex3d(.875, .875, -2);
+      glVertex3d(.875, .875,  0);
+
+      glNormal3f(1, 0, 0);
+      glVertex3d(.75,    0, -2);
+      glVertex3d(.75,    0, -6);
+      glVertex3d(.75, .875, -6);
+      glVertex3d(.75, .875, -2);
+
+      glEnd(); 
+      break;
+
+    // Key 88: White key block
+    case 88:
+      glColor3f(1, 1, 1);
+      glBegin(GL_QUADS);
+      // Bottom
+      glNormal3f(0, -1, 0);
+      glVertex3d(0,    0,  0);
+      glVertex3d(.875, 0,  0);
+      glVertex3d(.875, 0, -6);
+      glVertex3d(0,    0, -6);
+
+      // Top
+      glNormal3f(0, 1, 0);
+      glVertex3d(0,    .875,  0);
+      glVertex3d(.875, .875,  0);
+      glVertex3d(.875, .875, -6);
+      glVertex3d(0,    .875, -6);
+
+      // Sides
+      glNormal3f(0, 0, 1);
+      glVertex3d(0,       0,  0);
+      glVertex3d(.875,    0,  0);
+      glVertex3d(.875, .875,  0);
+      glVertex3d(0,    .875,  0);
+
+      glNormal3f(0, 0, -1);
+      glVertex3d(0,       0,  -6);
+      glVertex3d(.875,    0,  -6);
+      glVertex3d(.875, .875,  -6);
+      glVertex3d(0,    .875,  -6);
+
+      glNormal3f(-1, 0, 0);
+      glVertex3d(0,    0,  0);
+      glVertex3d(0,    0, -6);
+      glVertex3d(0, .875, -6);
+      glVertex3d(0, .875,  0);
+
+      glNormal3f(1, 0, 0);
+      glVertex3d(.875,    0,  0);
+      glVertex3d(.875,    0, -6);
+      glVertex3d(.875, .875, -6);
+      glVertex3d(.875, .875,  0);
+
+      glEnd();
+      break;
+    default:
+      break;
+  }
+
+  glPopMatrix();
+}
+
+static void piano(double x, double y, double z,
+                  double dx, double dy, double dz){
+  glPushMatrix(); 
+  glTranslated(x,y,z);
+  glScaled(dx,dy,dz);
+
+  // White key distance
+  float wkd  = 15./16.;
+  // Various black key offsets from white keys
+  float bkd  = 1/8.;
+  float bkd2 = 3/8.;
+  float bkd3 = 2/8.;
+
+  pianoKey(1,  0*wkd,0,0,       1,1,1, th,ph);
+  pianoKey(2,  1*wkd-bkd,0,0,   1,1,1, th,ph);
+  pianoKey(3,  1*wkd,0,0,       1,1,1, th,ph);
+  pianoKey(4,  2*wkd,0,0,       1,1,1, th,ph);
+  pianoKey(5,  3*wkd-bkd2,0,0,  1,1,1, th,ph);
+  pianoKey(6,  3*wkd,0,0,       1,1,1, th,ph);
+  pianoKey(7,  4*wkd-bkd,0,0,   1,1,1, th,ph);
+  pianoKey(8,  4*wkd,0,0,       1,1,1, th,ph);
+  pianoKey(9,  5*wkd,0,0,       1,1,1, th,ph);
+  pianoKey(10, 6*wkd-bkd2,0,0,  1,1,1, th,ph);
+  pianoKey(11, 6*wkd,0,0,       1,1,1, th,ph);
+  
+  pianoKey(12, 7*wkd-bkd3,0,0,  1,1,1, th,ph);
+  pianoKey(13, 7*wkd,0,0,       1,1,1, th,ph);
+  pianoKey(14, 8*wkd-bkd,0,0,   1,1,1, th,ph);
+  pianoKey(15, 8*wkd,0,0,       1,1,1, th,ph);
+  pianoKey(16, 9*wkd,0,0,       1,1,1, th,ph);
+  pianoKey(17, 10*wkd-bkd2,0,0, 1,1,1, th,ph);
+  pianoKey(18, 10*wkd,0,0,      1,1,1, th,ph);
+  pianoKey(19, 11*wkd-bkd,0,0,  1,1,1, th,ph);
+  pianoKey(20, 11*wkd,0,0,      1,1,1, th,ph);
+  pianoKey(21, 12*wkd,0,0,      1,1,1, th,ph);
+  pianoKey(22, 13*wkd-bkd2,0,0, 1,1,1, th,ph);
+  pianoKey(23, 13*wkd,0,0,      1,1,1, th,ph);
+
+  pianoKey(24, 14*wkd-bkd3,0,0, 1,1,1, th,ph);
+  pianoKey(25, 14*wkd,0,0,      1,1,1, th,ph);
+  pianoKey(26, 15*wkd-bkd,0,0,  1,1,1, th,ph);
+  pianoKey(27, 15*wkd,0,0,      1,1,1, th,ph);
+  pianoKey(28, 16*wkd,0,0,      1,1,1, th,ph);
+  pianoKey(29, 17*wkd-bkd2,0,0, 1,1,1, th,ph);
+  pianoKey(30, 17*wkd,0,0,      1,1,1, th,ph);
+  pianoKey(31, 18*wkd-bkd,0,0,  1,1,1, th,ph);
+  pianoKey(32, 18*wkd,0,0,      1,1,1, th,ph);
+  pianoKey(33, 19*wkd,0,0,      1,1,1, th,ph);
+  pianoKey(34, 20*wkd-bkd2,0,0, 1,1,1, th,ph);
+  pianoKey(35, 20*wkd,0,0,      1,1,1, th,ph);
+
+  pianoKey(36, 21*wkd-bkd3,0,0, 1,1,1, th,ph);
+  pianoKey(37, 21*wkd,0,0,      1,1,1, th,ph);
+  pianoKey(38, 22*wkd-bkd,0,0,  1,1,1, th,ph);
+  pianoKey(39, 22*wkd,0,0,      1,1,1, th,ph);
+  pianoKey(40, 23*wkd,0,0,      1,1,1, th,ph);
+  pianoKey(41, 24*wkd-bkd2,0,0, 1,1,1, th,ph);
+  pianoKey(42, 24*wkd,0,0,      1,1,1, th,ph);
+  pianoKey(43, 25*wkd-bkd,0,0,  1,1,1, th,ph);
+  pianoKey(44, 25*wkd,0,0,      1,1,1, th,ph);
+  pianoKey(45, 26*wkd,0,0,      1,1,1, th,ph);
+  pianoKey(46, 27*wkd-bkd2,0,0, 1,1,1, th,ph);
+  pianoKey(47, 27*wkd,0,0,      1,1,1, th,ph);
+
+  pianoKey(48, 28*wkd-bkd3,0,0, 1,1,1, th,ph);
+  pianoKey(49, 28*wkd,0,0,      1,1,1, th,ph);
+  pianoKey(50, 29*wkd-bkd,0,0,  1,1,1, th,ph);
+  pianoKey(51, 29*wkd,0,0,      1,1,1, th,ph);
+  pianoKey(52, 30*wkd,0,0,      1,1,1, th,ph);
+  pianoKey(53, 31*wkd-bkd2,0,0, 1,1,1, th,ph);
+  pianoKey(54, 31*wkd,0,0,      1,1,1, th,ph);
+  pianoKey(55, 32*wkd-bkd,0,0,  1,1,1, th,ph);
+  pianoKey(56, 32*wkd,0,0,      1,1,1, th,ph);
+  pianoKey(57, 33*wkd,0,0,      1,1,1, th,ph);
+  pianoKey(58, 34*wkd-bkd2,0,0, 1,1,1, th,ph);
+  pianoKey(59, 34*wkd,0,0,      1,1,1, th,ph);
+
+  pianoKey(60, 35*wkd-bkd3,0,0, 1,1,1, th,ph);
+  pianoKey(61, 35*wkd,0,0,      1,1,1, th,ph);
+  pianoKey(62, 36*wkd-bkd,0,0,  1,1,1, th,ph);
+  pianoKey(63, 36*wkd,0,0,      1,1,1, th,ph);
+  pianoKey(64, 37*wkd,0,0,      1,1,1, th,ph);
+  pianoKey(65, 38*wkd-bkd2,0,0, 1,1,1, th,ph);
+  pianoKey(66, 38*wkd,0,0,      1,1,1, th,ph);
+  pianoKey(67, 39*wkd-bkd,0,0,  1,1,1, th,ph);
+  pianoKey(68, 39*wkd,0,0,      1,1,1, th,ph);
+  pianoKey(69, 40*wkd,0,0,      1,1,1, th,ph);
+  pianoKey(70, 41*wkd-bkd2,0,0, 1,1,1, th,ph);
+  pianoKey(71, 41*wkd,0,0,      1,1,1, th,ph); 
+
+  pianoKey(72, 42*wkd-bkd3,0,0, 1,1,1, th,ph);
+  pianoKey(73, 42*wkd,0,0,      1,1,1, th,ph);
+  pianoKey(74, 43*wkd-bkd,0,0,  1,1,1, th,ph);
+  pianoKey(75, 43*wkd,0,0,      1,1,1, th,ph);
+  pianoKey(76, 44*wkd,0,0,      1,1,1, th,ph);
+  pianoKey(77, 45*wkd-bkd2,0,0, 1,1,1, th,ph);
+  pianoKey(78, 45*wkd,0,0,      1,1,1, th,ph);
+  pianoKey(79, 46*wkd-bkd,0,0,  1,1,1, th,ph);
+  pianoKey(80, 46*wkd,0,0,      1,1,1, th,ph);
+  pianoKey(81, 47*wkd,0,0,      1,1,1, th,ph);
+  pianoKey(82, 48*wkd-bkd2,0,0, 1,1,1, th,ph);
+  pianoKey(83, 48*wkd,0,0,      1,1,1, th,ph); 
+
+  pianoKey(84, 49*wkd-bkd3,0,0, 1,1,1, th,ph);
+  pianoKey(85, 49*wkd,0,0,      1,1,1, th,ph);
+  pianoKey(86, 50*wkd-bkd,0,0,  1,1,1, th,ph);
+  pianoKey(87, 50*wkd,0,0,      1,1,1, th,ph);
+  pianoKey(88, 51*wkd,0,0,      1,1,1, th,ph);  
+
+  glPopMatrix();
 }
 
 /*
@@ -107,9 +862,9 @@ static void ball(double x,double y,double z,double r)
  */
 void display()
 {
-   int i,j;
+   // int i,j;
    const double len=2.0;  //  Length of axes
-   double mul = 2.0/num;
+   // double mul = 2.0/num;
    float Position[] = {X+Cos(Th),Y+Sin(Th),Z,1-inf};
    //  Erase the window and the depth buffer
    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
@@ -176,26 +931,29 @@ void display()
    }
    else
       glDisable(GL_LIGHTING);
+
+   piano(-2.5,0,0, .1,.1,.1);
+   // pianoKey(6, 0,0,0, 1,1,1, th, ph);
    //  Enable textures
-   if (ntex)
-      glEnable(GL_TEXTURE_2D);
-   else
-      glDisable(GL_TEXTURE_2D);
-   glTexEnvi(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_MODULATE);
-   //  Draw the wall
-   glColor3f(1.0,1.0,1.0);
-   glNormal3f(0,0,1); 
-   glBegin(GL_QUADS);
-   for (i=0;i<num;i++)
-      for (j=0;j<num;j++)
-      {
-         glTexCoord2d(mul*(i+0),mul*(j+0)); glVertex2d(5*mul*(i+0)-5,5*mul*(j+0)-5);
-         glTexCoord2d(mul*(i+1),mul*(j+0)); glVertex2d(5*mul*(i+1)-5,5*mul*(j+0)-5);
-         glTexCoord2d(mul*(i+1),mul*(j+1)); glVertex2d(5*mul*(i+1)-5,5*mul*(j+1)-5);
-         glTexCoord2d(mul*(i+0),mul*(j+1)); glVertex2d(5*mul*(i+0)-5,5*mul*(j+1)-5);
-      }
-   glEnd();
-   glDisable(GL_TEXTURE_2D);
+   // if (ntex)
+   //    glEnable(GL_TEXTURE_2D);
+   // else
+      // glDisable(GL_TEXTURE_2D);
+   // glTexEnvi(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_MODULATE);
+   // //  Draw the wall
+   // glColor3f(1.0,1.0,1.0);
+   // glNormal3f(0,0,1); 
+   // glBegin(GL_QUADS);
+   // for (i=0;i<num;i++)
+   //    for (j=0;j<num;j++)
+   //    {
+   //       glTexCoord2d(mul*(i+0),mul*(j+0)); glVertex2d(5*mul*(i+0)-5,5*mul*(j+0)-5);
+   //       glTexCoord2d(mul*(i+1),mul*(j+0)); glVertex2d(5*mul*(i+1)-5,5*mul*(j+0)-5);
+   //       glTexCoord2d(mul*(i+1),mul*(j+1)); glVertex2d(5*mul*(i+1)-5,5*mul*(j+1)-5);
+   //       glTexCoord2d(mul*(i+0),mul*(j+1)); glVertex2d(5*mul*(i+0)-5,5*mul*(j+1)-5);
+   //    }
+   // glEnd();
+   // glDisable(GL_TEXTURE_2D);
    //  Draw axes - no lighting from here on
    glDisable(GL_LIGHTING);
    glColor3f(1,1,1);
@@ -216,19 +974,6 @@ void display()
       Print("Y");
       glRasterPos3d(0.0,0.0,len);
       Print("Z");
-      //  Show quads
-      glBegin(GL_LINES);
-      for (i=0;i<=num;i++)
-      {
-         glVertex3d(5*mul*i-5,-5,0.01);
-         glVertex3d(5*mul*i-5,+5,0.01);
-      }
-      for (j=0;j<=num;j++)
-      {
-         glVertex3d(-5,5*mul*j-5,0.01);
-         glVertex3d(+5,5*mul*j-5,0.01);
-      }
-      glEnd();
    }
    //  Display parameters
    glWindowPos2i(5,5);
@@ -426,7 +1171,7 @@ int main(int argc,char* argv[])
    reshape(screen->w,screen->h);
 
    //  Load textures
-   LoadTexBMP("brick.bmp");
+   // LoadTexBMP("brick.bmp");
 
    //  Initialize audio
    if (Mix_OpenAudio(44100,AUDIO_S16SYS,2,4096)) Fatal("Cannot initialize audio\n");

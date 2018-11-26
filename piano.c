@@ -64,7 +64,9 @@ float shiny   =   1; // Shininess (value)
 float X       = 0;    // Light X position
 float Y       = 0;    // Light Y position
 float Z       = 1;    // Light Z position
-
+// Piano values
+int interval = 1;
+int playing[89];
 
 static void Vertex(double th,double ph)
 {
@@ -74,13 +76,13 @@ static void Vertex(double th,double ph)
 static void pianoKey(int num,
       double x, double y, double z,
       double dx, double dy, double dz, 
-      double th, double ph){
+      double playing, double temp){
 
   glPushMatrix();
   glTranslated(x,y,z);
   glScaled(dx,dy,dz);
 
-  // First key is special 
+  // First key has a unique shape 
   if(num == 1){
     num = -1;
   }
@@ -90,9 +92,23 @@ static void pianoKey(int num,
   if(num != 88 && num != -1 && num >= 12){
     num %= 12;
   }
+  
+  if(playing == 1){
+      glTranslated(0,0,-6);
+      if(num == 0 || num == 2 || num == 5 || num == 7 || num == 10) 
+          glRotatef(3, 1,0,0);
+      else 
+          glRotatef(6 , 1,0,0);
+      glTranslated(0,0,6);
+  }
+    //   case 0:
+    // case 2:
+    // case 5:
+    // case 7:
+    // case 10:
+
   switch(num){
     // White key with hole on right
-    // case 1:
     case 4:
     case 9:
       glColor3f(1, 1, 1);
@@ -729,110 +745,106 @@ static void piano(double x, double y, double z,
   float bkd2 = 3/8.;
   float bkd3 = 2/8.;
 
-  pianoKey(1,  0*wkd,0,0,       1,1,1, th,ph);
-  pianoKey(2,  1*wkd-bkd,0,0,   1,1,1, th,ph);
-  pianoKey(3,  1*wkd,0,0,       1,1,1, th,ph);
-  pianoKey(4,  2*wkd,0,0,       1,1,1, th,ph);
-  pianoKey(5,  3*wkd-bkd2,0,0,  1,1,1, th,ph);
-  pianoKey(6,  3*wkd,0,0,       1,1,1, th,ph);
-  pianoKey(7,  4*wkd-bkd,0,0,   1,1,1, th,ph);
-  pianoKey(8,  4*wkd,0,0,       1,1,1, th,ph);
-  pianoKey(9,  5*wkd,0,0,       1,1,1, th,ph);
-  pianoKey(10, 6*wkd-bkd2,0,0,  1,1,1, th,ph);
-  pianoKey(11, 6*wkd,0,0,       1,1,1, th,ph);
+  pianoKey(1,  0*wkd,0,0,       1,1,1, playing[1],ph);
+  pianoKey(2,  1*wkd-bkd,0,0,   1,1,1, playing[2],ph);
+  pianoKey(3,  1*wkd,0,0,       1,1,1, playing[3],ph);
+  pianoKey(4,  2*wkd,0,0,       1,1,1, playing[4],ph);
+  pianoKey(5,  3*wkd-bkd2,0,0,  1,1,1, playing[5],ph);
+  pianoKey(6,  3*wkd,0,0,       1,1,1, playing[6],ph);
+  pianoKey(7,  4*wkd-bkd,0,0,   1,1,1, playing[7],ph);
+  pianoKey(8,  4*wkd,0,0,       1,1,1, playing[8],ph);
+  pianoKey(9,  5*wkd,0,0,       1,1,1, playing[9],ph);
+  pianoKey(10, 6*wkd-bkd2,0,0,  1,1,1, playing[10],ph);
+  pianoKey(11, 6*wkd,0,0,       1,1,1, playing[11],ph);
   
-  pianoKey(12, 7*wkd-bkd3,0,0,  1,1,1, th,ph);
-  pianoKey(13, 7*wkd,0,0,       1,1,1, th,ph);
-  pianoKey(14, 8*wkd-bkd,0,0,   1,1,1, th,ph);
-  pianoKey(15, 8*wkd,0,0,       1,1,1, th,ph);
-  pianoKey(16, 9*wkd,0,0,       1,1,1, th,ph);
-  pianoKey(17, 10*wkd-bkd2,0,0, 1,1,1, th,ph);
-  pianoKey(18, 10*wkd,0,0,      1,1,1, th,ph);
-  pianoKey(19, 11*wkd-bkd,0,0,  1,1,1, th,ph);
-  pianoKey(20, 11*wkd,0,0,      1,1,1, th,ph);
-  pianoKey(21, 12*wkd,0,0,      1,1,1, th,ph);
-  pianoKey(22, 13*wkd-bkd2,0,0, 1,1,1, th,ph);
-  pianoKey(23, 13*wkd,0,0,      1,1,1, th,ph);
+  pianoKey(12, 7*wkd-bkd3,0,0,  1,1,1, playing[12],ph);
+  pianoKey(13, 7*wkd,0,0,       1,1,1, playing[13],ph);
+  pianoKey(14, 8*wkd-bkd,0,0,   1,1,1, playing[14],ph);
+  pianoKey(15, 8*wkd,0,0,       1,1,1, playing[15],ph);
+  pianoKey(16, 9*wkd,0,0,       1,1,1, playing[16],ph);
+  pianoKey(17, 10*wkd-bkd2,0,0, 1,1,1, playing[17],ph);
+  pianoKey(18, 10*wkd,0,0,      1,1,1, playing[18],ph);
+  pianoKey(19, 11*wkd-bkd,0,0,  1,1,1, playing[19],ph);
+  pianoKey(20, 11*wkd,0,0,      1,1,1, playing[20],ph);
+  pianoKey(21, 12*wkd,0,0,      1,1,1, playing[21],ph);
+  pianoKey(22, 13*wkd-bkd2,0,0, 1,1,1, playing[22],ph);
+  pianoKey(23, 13*wkd,0,0,      1,1,1, playing[23],ph);
 
-  pianoKey(24, 14*wkd-bkd3,0,0, 1,1,1, th,ph);
-  pianoKey(25, 14*wkd,0,0,      1,1,1, th,ph);
-  pianoKey(26, 15*wkd-bkd,0,0,  1,1,1, th,ph);
-  pianoKey(27, 15*wkd,0,0,      1,1,1, th,ph);
-  pianoKey(28, 16*wkd,0,0,      1,1,1, th,ph);
-  pianoKey(29, 17*wkd-bkd2,0,0, 1,1,1, th,ph);
-  pianoKey(30, 17*wkd,0,0,      1,1,1, th,ph);
-  pianoKey(31, 18*wkd-bkd,0,0,  1,1,1, th,ph);
-  pianoKey(32, 18*wkd,0,0,      1,1,1, th,ph);
-  pianoKey(33, 19*wkd,0,0,      1,1,1, th,ph);
-  pianoKey(34, 20*wkd-bkd2,0,0, 1,1,1, th,ph);
-  pianoKey(35, 20*wkd,0,0,      1,1,1, th,ph);
+  pianoKey(24, 14*wkd-bkd3,0,0, 1,1,1, playing[24],ph);
+  pianoKey(25, 14*wkd,0,0,      1,1,1, playing[25],ph);
+  pianoKey(26, 15*wkd-bkd,0,0,  1,1,1, playing[26],ph);
+  pianoKey(27, 15*wkd,0,0,      1,1,1, playing[27],ph);
+  pianoKey(28, 16*wkd,0,0,      1,1,1, playing[28],ph);
+  pianoKey(29, 17*wkd-bkd2,0,0, 1,1,1, playing[29],ph);
+  pianoKey(30, 17*wkd,0,0,      1,1,1, playing[30],ph);
+  pianoKey(31, 18*wkd-bkd,0,0,  1,1,1, playing[31],ph);
+  pianoKey(32, 18*wkd,0,0,      1,1,1, playing[32],ph);
+  pianoKey(33, 19*wkd,0,0,      1,1,1, playing[33],ph);
+  pianoKey(34, 20*wkd-bkd2,0,0, 1,1,1, playing[34],ph);
+  pianoKey(35, 20*wkd,0,0,      1,1,1, playing[35],ph);
 
-  pianoKey(36, 21*wkd-bkd3,0,0, 1,1,1, th,ph);
-  pianoKey(37, 21*wkd,0,0,      1,1,1, th,ph);
-  pianoKey(38, 22*wkd-bkd,0,0,  1,1,1, th,ph);
-  pianoKey(39, 22*wkd,0,0,      1,1,1, th,ph);
-  pianoKey(40, 23*wkd,0,0,      1,1,1, th,ph);
-  pianoKey(41, 24*wkd-bkd2,0,0, 1,1,1, th,ph);
-  pianoKey(42, 24*wkd,0,0,      1,1,1, th,ph);
-  pianoKey(43, 25*wkd-bkd,0,0,  1,1,1, th,ph);
-  pianoKey(44, 25*wkd,0,0,      1,1,1, th,ph);
-  pianoKey(45, 26*wkd,0,0,      1,1,1, th,ph);
-  pianoKey(46, 27*wkd-bkd2,0,0, 1,1,1, th,ph);
-  pianoKey(47, 27*wkd,0,0,      1,1,1, th,ph);
+  pianoKey(36, 21*wkd-bkd3,0,0, 1,1,1, playing[36],ph);
+  pianoKey(37, 21*wkd,0,0,      1,1,1, playing[37],ph);
+  pianoKey(38, 22*wkd-bkd,0,0,  1,1,1, playing[38],ph);
+  pianoKey(39, 22*wkd,0,0,      1,1,1, playing[39],ph);
+  pianoKey(40, 23*wkd,0,0,      1,1,1, playing[40],ph);
+  pianoKey(41, 24*wkd-bkd2,0,0, 1,1,1, playing[41],ph);
+  pianoKey(42, 24*wkd,0,0,      1,1,1, playing[42],ph);
+  pianoKey(43, 25*wkd-bkd,0,0,  1,1,1, playing[43],ph);
+  pianoKey(44, 25*wkd,0,0,      1,1,1, playing[44],ph);
+  pianoKey(45, 26*wkd,0,0,      1,1,1, playing[45],ph);
+  pianoKey(46, 27*wkd-bkd2,0,0, 1,1,1, playing[46],ph);
+  pianoKey(47, 27*wkd,0,0,      1,1,1, playing[47],ph);
 
-  pianoKey(48, 28*wkd-bkd3,0,0, 1,1,1, th,ph);
-  pianoKey(49, 28*wkd,0,0,      1,1,1, th,ph);
-  pianoKey(50, 29*wkd-bkd,0,0,  1,1,1, th,ph);
-  pianoKey(51, 29*wkd,0,0,      1,1,1, th,ph);
-  pianoKey(52, 30*wkd,0,0,      1,1,1, th,ph);
-  pianoKey(53, 31*wkd-bkd2,0,0, 1,1,1, th,ph);
-  pianoKey(54, 31*wkd,0,0,      1,1,1, th,ph);
-  pianoKey(55, 32*wkd-bkd,0,0,  1,1,1, th,ph);
-  pianoKey(56, 32*wkd,0,0,      1,1,1, th,ph);
-  pianoKey(57, 33*wkd,0,0,      1,1,1, th,ph);
-  pianoKey(58, 34*wkd-bkd2,0,0, 1,1,1, th,ph);
-  pianoKey(59, 34*wkd,0,0,      1,1,1, th,ph);
+  pianoKey(48, 28*wkd-bkd3,0,0, 1,1,1, playing[48],ph);
+  pianoKey(49, 28*wkd,0,0,      1,1,1, playing[49],ph);
+  pianoKey(50, 29*wkd-bkd,0,0,  1,1,1, playing[50],ph);
+  pianoKey(51, 29*wkd,0,0,      1,1,1, playing[51],ph);
+  pianoKey(52, 30*wkd,0,0,      1,1,1, playing[52],ph);
+  pianoKey(53, 31*wkd-bkd2,0,0, 1,1,1, playing[53],ph);
+  pianoKey(54, 31*wkd,0,0,      1,1,1, playing[54],ph);
+  pianoKey(55, 32*wkd-bkd,0,0,  1,1,1, playing[55],ph);
+  pianoKey(56, 32*wkd,0,0,      1,1,1, playing[56],ph);
+  pianoKey(57, 33*wkd,0,0,      1,1,1, playing[57],ph);
+  pianoKey(58, 34*wkd-bkd2,0,0, 1,1,1, playing[58],ph);
+  pianoKey(59, 34*wkd,0,0,      1,1,1, playing[59],ph);
 
-  pianoKey(60, 35*wkd-bkd3,0,0, 1,1,1, th,ph);
-  pianoKey(61, 35*wkd,0,0,      1,1,1, th,ph);
-  pianoKey(62, 36*wkd-bkd,0,0,  1,1,1, th,ph);
-  pianoKey(63, 36*wkd,0,0,      1,1,1, th,ph);
-  pianoKey(64, 37*wkd,0,0,      1,1,1, th,ph);
-  pianoKey(65, 38*wkd-bkd2,0,0, 1,1,1, th,ph);
-  pianoKey(66, 38*wkd,0,0,      1,1,1, th,ph);
-  pianoKey(67, 39*wkd-bkd,0,0,  1,1,1, th,ph);
-  pianoKey(68, 39*wkd,0,0,      1,1,1, th,ph);
-  pianoKey(69, 40*wkd,0,0,      1,1,1, th,ph);
-  pianoKey(70, 41*wkd-bkd2,0,0, 1,1,1, th,ph);
-  pianoKey(71, 41*wkd,0,0,      1,1,1, th,ph); 
+  pianoKey(60, 35*wkd-bkd3,0,0, 1,1,1, playing[60],ph);
+  pianoKey(61, 35*wkd,0,0,      1,1,1, playing[61],ph);
+  pianoKey(62, 36*wkd-bkd,0,0,  1,1,1, playing[62],ph);
+  pianoKey(63, 36*wkd,0,0,      1,1,1, playing[63],ph);
+  pianoKey(64, 37*wkd,0,0,      1,1,1, playing[64],ph);
+  pianoKey(65, 38*wkd-bkd2,0,0, 1,1,1, playing[65],ph);
+  pianoKey(66, 38*wkd,0,0,      1,1,1, playing[66],ph);
+  pianoKey(67, 39*wkd-bkd,0,0,  1,1,1, playing[67],ph);
+  pianoKey(68, 39*wkd,0,0,      1,1,1, playing[68],ph);
+  pianoKey(69, 40*wkd,0,0,      1,1,1, playing[69],ph);
+  pianoKey(70, 41*wkd-bkd2,0,0, 1,1,1, playing[70],ph);
+  pianoKey(71, 41*wkd,0,0,      1,1,1, playing[71],ph);
 
-  pianoKey(72, 42*wkd-bkd3,0,0, 1,1,1, th,ph);
-  pianoKey(73, 42*wkd,0,0,      1,1,1, th,ph);
-  pianoKey(74, 43*wkd-bkd,0,0,  1,1,1, th,ph);
-  pianoKey(75, 43*wkd,0,0,      1,1,1, th,ph);
-  pianoKey(76, 44*wkd,0,0,      1,1,1, th,ph);
-  pianoKey(77, 45*wkd-bkd2,0,0, 1,1,1, th,ph);
-  pianoKey(78, 45*wkd,0,0,      1,1,1, th,ph);
-  pianoKey(79, 46*wkd-bkd,0,0,  1,1,1, th,ph);
-  pianoKey(80, 46*wkd,0,0,      1,1,1, th,ph);
-  pianoKey(81, 47*wkd,0,0,      1,1,1, th,ph);
-  pianoKey(82, 48*wkd-bkd2,0,0, 1,1,1, th,ph);
-  pianoKey(83, 48*wkd,0,0,      1,1,1, th,ph); 
+  pianoKey(72, 42*wkd-bkd3,0,0, 1,1,1, playing[72],ph);
+  pianoKey(73, 42*wkd,0,0,      1,1,1, playing[73],ph);
+  pianoKey(74, 43*wkd-bkd,0,0,  1,1,1, playing[74],ph);
+  pianoKey(75, 43*wkd,0,0,      1,1,1, playing[75],ph);
+  pianoKey(76, 44*wkd,0,0,      1,1,1, playing[76],ph);
+  pianoKey(77, 45*wkd-bkd2,0,0, 1,1,1, playing[77],ph);
+  pianoKey(78, 45*wkd,0,0,      1,1,1, playing[78],ph);
+  pianoKey(79, 46*wkd-bkd,0,0,  1,1,1, playing[79],ph);
+  pianoKey(80, 46*wkd,0,0,      1,1,1, playing[80],ph);
+  pianoKey(81, 47*wkd,0,0,      1,1,1, playing[81],ph);
+  pianoKey(82, 48*wkd-bkd2,0,0, 1,1,1, playing[82],ph);
+  pianoKey(83, 48*wkd,0,0,      1,1,1, playing[83],ph); 
 
-  pianoKey(84, 49*wkd-bkd3,0,0, 1,1,1, th,ph);
-  pianoKey(85, 49*wkd,0,0,      1,1,1, th,ph);
-  pianoKey(86, 50*wkd-bkd,0,0,  1,1,1, th,ph);
-  pianoKey(87, 50*wkd,0,0,      1,1,1, th,ph);
-  pianoKey(88, 51*wkd,0,0,      1,1,1, th,ph);  
+  pianoKey(84, 49*wkd-bkd3,0,0, 1,1,1, playing[84],ph);
+  pianoKey(85, 49*wkd,0,0,      1,1,1, playing[85],ph);
+  pianoKey(86, 50*wkd-bkd,0,0,  1,1,1, playing[86],ph);
+  pianoKey(87, 50*wkd,0,0,      1,1,1, playing[87],ph);
+  pianoKey(88, 51*wkd,0,0,      1,1,1, playing[88],ph);  
 
   glPopMatrix();
 }
 
-/*
- *  Draw a ball
- *     at (x,y,z)
- *     radius (r)
- */
+
 static void ball(double x,double y,double z,double r)
 {
    int th,ph;
@@ -857,9 +869,7 @@ static void ball(double x,double y,double z,double r)
    glPopMatrix();
 }
 
-/*
- *  OpenGL (GLUT) calls this routine to display the scene
- */
+
 void display()
 {
    // int i,j;
@@ -955,6 +965,7 @@ void display()
    // glEnd();
    // glDisable(GL_TEXTURE_2D);
    //  Draw axes - no lighting from here on
+
    glDisable(GL_LIGHTING);
    glColor3f(1,1,1);
    if (axes)
@@ -977,8 +988,8 @@ void display()
    }
    //  Display parameters
    glWindowPos2i(5,5);
-   Print("Angle=%d,%d  Dim=%.1f Projection=%s Light=%s",
-     th,ph,dim,mode?"Perpective":"Orthogonal",light?"On":"Off");
+   Print("Angle=%d,%d  Dim=%.1f Projection=%s Light=%s Interval=%d",
+     th,ph,dim,mode?"Perpective":"Orthogonal",light?"On":"Off", interval);
    if (light)
    {
       glWindowPos2i(5,65);
@@ -1012,55 +1023,83 @@ int key()
    else if (keys[SDLK_b])
       axes = 1-axes;
    //  Toggle textures
-   else if (keys[SDLK_t])
-      ntex = 1-ntex;
+   // else if (keys[SDLK_t])
+   //    ntex = 1-ntex;
    //  Toggle lighting
-   else if (keys[SDLK_l])
+   else if (keys[SDLK_m])
       light = 1-light;
    //  Toggle infinity
    else if (keys[SDLK_i])
       inf = 1-inf;
+
+
+   if ((keys[SDLK_KP_MINUS] || keys[SDLK_MINUS]) && interval>1)
+      interval--;
+   if ((keys[SDLK_KP_PLUS] || keys[SDLK_EQUALS]) && interval<8)
+      interval++;
+   if(keys[SDLK_a])
+      playing[(interval - 1)*12 + 1] = 1 - playing[(interval - 1)*12 + 1];
+   if(keys[SDLK_s])
+      playing[(interval - 1)*12 + 2] = 1 - playing[(interval - 1)*12 + 2];
+   if(keys[SDLK_d])
+      playing[(interval - 1)*12 + 3] = 1 - playing[(interval - 1)*12 + 3];
+   if(keys[SDLK_f])
+      playing[(interval - 1)*12 + 4] = 1 - playing[(interval - 1)*12 + 4];
+   if(keys[SDLK_g])
+      playing[(interval - 1)*12 + 5] = 1 - playing[(interval - 1)*12 + 5];
+   if(keys[SDLK_h])
+      playing[(interval - 1)*12 + 6] = 1 - playing[(interval - 1)*12 + 6];
+   if(keys[SDLK_j])
+      playing[(interval - 1)*12 + 7] = 1 - playing[(interval - 1)*12 + 7];
+   if(keys[SDLK_k])
+      playing[(interval - 1)*12 + 8] = 1 - playing[(interval - 1)*12 + 8];
+   if(keys[SDLK_l])
+      playing[(interval - 1)*12 + 9] = 1 - playing[(interval - 1)*12 + 9];
+   if(keys[SDLK_SEMICOLON] || keys[SDLK_COLON])
+      playing[(interval - 1)*12 + 10] = 1 - playing[(interval - 1)*12 + 10];
+   if(keys[SDLK_QUOTE])
+      playing[(interval - 1)*12 + 11] = 1 - playing[(interval - 1)*12 + 11];
    //  Switch projection mode
-   else if (keys[SDLK_p])
-      mode = 1-mode;
-   //  Change number of quadrangles
-   else if ((keys[SDLK_KP_MINUS] || keys[SDLK_MINUS]) && num>1)
-      num--;
-   else if ((keys[SDLK_KP_PLUS] || keys[SDLK_EQUALS]) && num<100)
-      num++;
+   // else if (keys[SDLK_p])
+   //    mode = 1-mode;
+   // //  Change number of quadrangles
+   // else if ((keys[SDLK_KP_MINUS] || keys[SDLK_MINUS]) && num>1)
+   //    num--;
+   // else if ((keys[SDLK_KP_PLUS] || keys[SDLK_EQUALS]) && num<100)
+   //    num++;
    //  Increase/decrease spot azimuth
-   else if (keys[SDLK_LEFTBRACKET] && !shift)
-      Ph -= 5;
-   else if (keys[SDLK_RIGHTBRACKET] && !shift)
-      Ph += 5;
-   //  Increase/decrease spot cutoff angle
-   else if (keys[SDLK_LEFTBRACKET] && shift && sco>5)
-      sco = sco==180 ? 90 : sco-5;
-   else if (keys[SDLK_RIGHTBRACKET] && shift && sco<180)
-      sco = sco<90 ? sco+5 : 180;
-   //  Change spot exponent
-   else if (keys[SDLK_COMMA])
-   {
-      Exp -= 0.1;
-      if (Exp<0) Exp=0;
-   }
-   else if (keys[SDLK_PERIOD])
-      Exp += 0.1;
-   //  Change constant attenuation
-   else if (keys[SDLK_1] && !shift && at0>0)
-      at0--;
-   else if (keys[SDLK_1] && shift)
-      at0++;
-   //  Change linear attenuation
-   else if (keys[SDLK_2] && !shift && at1>0)
-      at1--;
-   else if (keys[SDLK_2] && shift)
-      at1++;
-   //  Change quadratic attenuation
-   else if (keys[SDLK_3] && !shift && at2>0)
-      at2--;
-   else if (keys[SDLK_3] && shift)
-      at2++;
+   // else if (keys[SDLK_LEFTBRACKET] && !shift)
+   //    Ph -= 5;
+   // else if (keys[SDLK_RIGHTBRACKET] && !shift)
+   //    Ph += 5;
+   // //  Increase/decrease spot cutoff angle
+   // else if (keys[SDLK_LEFTBRACKET] && shift && sco>5)
+   //    sco = sco==180 ? 90 : sco-5;
+   // else if (keys[SDLK_RIGHTBRACKET] && shift && sco<180)
+   //    sco = sco<90 ? sco+5 : 180;
+   // //  Change spot exponent
+   // else if (keys[SDLK_COMMA])
+   // {
+   //    Exp -= 0.1;
+   //    if (Exp<0) Exp=0;
+   // }
+   // else if (keys[SDLK_PERIOD])
+   //    Exp += 0.1;
+   // //  Change constant attenuation
+   // else if (keys[SDLK_1] && !shift && at0>0)
+   //    at0--;
+   // else if (keys[SDLK_1] && shift)
+   //    at0++;
+   // //  Change linear attenuation
+   // else if (keys[SDLK_2] && !shift && at1>0)
+   //    at1--;
+   // else if (keys[SDLK_2] && shift)
+   //    at1++;
+   // //  Change quadratic attenuation
+   // else if (keys[SDLK_3] && !shift && at2>0)
+   //    at2--;
+   // else if (keys[SDLK_3] && shift)
+   //    at2++;
    //  Light position
    else if (keys[SDLK_x] && !shift)
       X -= 0.1;
@@ -1074,31 +1113,31 @@ int key()
       Z -= 0.1;
    else if (keys[SDLK_z] && shift)
       Z += 0.1;
-   //  Ambient level
-   else if (keys[SDLK_a] && !shift && ambient>0)
-      ambient -= 5;
-   else if (keys[SDLK_a] && shift && ambient<100)
-      ambient += 5;
-   //  Diffuse level
-   else if (keys[SDLK_d] && !shift && diffuse>0)
-      diffuse -= 5;
-   else if (keys[SDLK_d] && shift && diffuse<100)
-      diffuse += 5;
-   //  Specular level
-   else if (keys[SDLK_s] && !shift && specular>0)
-      specular -= 5;
-   else if (keys[SDLK_s] && shift && specular<100)
-      specular += 5;
-   //  Emission level
-   else if (keys[SDLK_e] && !shift && emission>0)
-      emission -= 5;
-   else if (keys[SDLK_e] && shift && emission<100)
-      emission += 5;
-   //  Shininess level
-   else if (keys[SDLK_n] && !shift && shininess>-1)
-      shininess -= 1;
-   else if (keys[SDLK_n] && shift && shininess<7)
-      shininess += 1;
+   // //  Ambient level
+   // else if (keys[SDLK_a] && !shift && ambient>0)
+   //    ambient -= 5;
+   // else if (keys[SDLK_a] && shift && ambient<100)
+   //    ambient += 5;
+   // //  Diffuse level
+   // else if (keys[SDLK_d] && !shift && diffuse>0)
+   //    diffuse -= 5;
+   // else if (keys[SDLK_d] && shift && diffuse<100)
+   //    diffuse += 5;
+   // //  Specular level
+   // else if (keys[SDLK_s] && !shift && specular>0)
+   //    specular -= 5;
+   // else if (keys[SDLK_s] && shift && specular<100)
+   //    specular += 5;
+   // //  Emission level
+   // else if (keys[SDLK_e] && !shift && emission>0)
+   //    emission -= 5;
+   // else if (keys[SDLK_e] && shift && emission<100)
+   //    emission += 5;
+   // //  Shininess level
+   // else if (keys[SDLK_n] && !shift && shininess>-1)
+   //    shininess -= 1;
+   // else if (keys[SDLK_n] && shift && shininess<7)
+   //    shininess += 1;
    //  Increase/decrease asimuth
    else if (keys[SDLK_RIGHT])
       th += 5;
@@ -1159,14 +1198,15 @@ int main(int argc,char* argv[])
    double t0=0;
    Mix_Chunk* music;
    SDL_Surface* screen;
+   Mix_Chunk* notes[89];
 
    //  Initialize SDL
    SDL_Init(SDL_INIT_VIDEO);
    //  Set size, resizable and double buffering
-   screen = SDL_SetVideoMode(600,600,0,SDL_OPENGL|SDL_RESIZABLE|SDL_DOUBLEBUF);
+   screen = SDL_SetVideoMode(750,750,0,SDL_OPENGL|SDL_RESIZABLE|SDL_DOUBLEBUF);
    if (!screen ) Fatal("Cannot set SDL video mode\n");
    //  Set window and icon labels
-   SDL_WM_SetCaption("More Lighting - SDL","sdl20");
+   SDL_WM_SetCaption("Piano Project- Vladimir Zhdanov","sdl20");
    //  Set screen size
    reshape(screen->w,screen->h);
 
@@ -1175,7 +1215,17 @@ int main(int argc,char* argv[])
 
    //  Initialize audio
    if (Mix_OpenAudio(44100,AUDIO_S16SYS,2,4096)) Fatal("Cannot initialize audio\n");
-   //  Load "The Wall"
+  
+   //  Load note sounds from wav files
+   char filepath[14];
+   for(int i = 1; i < 89; i++){
+      if(i < 10) sprintf(filepath, "notes/0%d.wav", i);
+      else sprintf(filepath, "notes/%d.wav", i);          
+      notes[i] = Mix_LoadWAV(filepath);
+      if (!notes[i]) Fatal("Cannot load note %d\n", i);
+      // printf("%s\n", filepath);
+   }
+
    music = Mix_LoadWAV("notes/55.wav");
    if (!music) Fatal("Cannot load music\n");
    //  Play (looping)

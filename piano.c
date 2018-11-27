@@ -7,6 +7,8 @@
 #include <SDL/SDL.h>
 #include <SDL/SDL_mixer.h>
 #include "CSCIx229.h"
+
+int width = 750; int height = 750;
 int axes=1;       //  Display axes
 int mode=1;       //  Projection mode
 int side=0;       //  Two sided mode
@@ -37,6 +39,7 @@ float X       = 0;    // Light X position
 float Y       = 0;    // Light Y position
 float Z       = 1;    // Light Z position
 // Piano values
+int highlight = 1;
 int delay = 5;
 int interval = 1;
 int playing[89];
@@ -57,6 +60,7 @@ static void pianoKey(int num,
   glTranslated(x,y,z);
   glScaled(dx,dy,dz);
 
+  glStencilFunc(GL_ALWAYS, num, -1);
   // First key has a unique shape 
   if(num == 1){
     num = -1;
@@ -86,7 +90,7 @@ static void pianoKey(int num,
     // White key with hole on right
     case 4:
     case 9:
-      glColor3f(1, 1, 1);
+      (playing && highlight) ? glColor3f(1,.4,.4) : glColor3f(1, 1, 1);
       glBegin(GL_QUADS);
       // Bottom
       glNormal3f(0, -1, 0);
@@ -159,7 +163,7 @@ static void pianoKey(int num,
     case 5:
     case 7:
     case 10:
-      glColor3f(.2, .2, .2);
+      (playing && highlight) ? glColor3f(.6,.2,.2) : glColor3f(.2, .2, .2);
       glBegin(GL_QUADS);
 
       // Bottom
@@ -232,7 +236,7 @@ static void pianoKey(int num,
     // White key with hole on left
     case 3:
     case 8:
-      glColor3f(1, 1, 1);
+      (playing && highlight) ? glColor3f(1,.4,.4) : glColor3f(1, 1, 1);
       glBegin(GL_QUADS);
       // Bottom
       glNormal3f(0, -1, 0);
@@ -302,7 +306,7 @@ static void pianoKey(int num,
     // White key with holes on both sides
     // Hole on left is larger
     case 1:
-      glColor3f(1, 1, 1);
+      (playing && highlight) ? glColor3f(1,.4,.4) : glColor3f(1, 1, 1);
       glBegin(GL_QUADS);
       // Bottom
       glNormal3f(0, -1, 0);
@@ -397,7 +401,7 @@ static void pianoKey(int num,
     // White key with holes on both sides
     // Both holes same size
     case 6:
-      glColor3f(1, 1, 1);
+      (playing && highlight) ? glColor3f(1,.4,.4) : glColor3f(1, 1, 1);
       glBegin(GL_QUADS);
       // Bottom
       glNormal3f(0, -1, 0);
@@ -492,7 +496,7 @@ static void pianoKey(int num,
     // White key with holes on both sides
     // Hole on right is larger
     case 11: 
-      glColor3f(1, 1, 1);
+      (playing && highlight) ? glColor3f(1,.4,.4) : glColor3f(1, 1, 1);
       glBegin(GL_QUADS);
       // Bottom
       glNormal3f(0, -1, 0);
@@ -587,7 +591,7 @@ static void pianoKey(int num,
     // Special Keys
     // Key 1: Smaller hole on right side
     case -1:
-    glColor3f(1, 1, 1);
+      (playing && highlight) ? glColor3f(1,.4,.4) : glColor3f(1, 1, 1);
       glBegin(GL_QUADS);
       // Bottom
       glNormal3f(0, -1, 0);
@@ -657,7 +661,7 @@ static void pianoKey(int num,
 
     // Key 88: White key block
     case 88:
-      glColor3f(1, 1, 1);
+      (playing && highlight) ? glColor3f(1,.4,.4) : glColor3f(1, 1, 1);
       glBegin(GL_QUADS);
       // Bottom
       glNormal3f(0, -1, 0);
@@ -852,7 +856,8 @@ void display()
    // double mul = 2.0/num;
    float Position[] = {X+Cos(Th),Y+Sin(Th),Z,1-inf};
    //  Erase the window and the depth buffer
-   glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+   glClearStencil(0);
+   glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
    //  Enable Z-buffering in OpenGL
    glEnable(GL_DEPTH_TEST);
    //  Undo previous transformations
@@ -917,6 +922,8 @@ void display()
    else
       glDisable(GL_LIGHTING);
 
+   glEnable(GL_STENCIL_TEST);
+   glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
    piano(-6.25,0,0, .25,.25,.25);
    // pianoKey(6, 0,0,0, 1,1,1, th, ph);
    //  Enable textures
@@ -1099,14 +1106,34 @@ int key()
  */
 void reshape(int width,int height)
 {
-   //  Ratio of the width to the height of the window
-   asp = (height>0) ? (double)width/height : 1;
-   //  Set the viewport to the entire window
-   glViewport(0,0, width,height);
-   //  Set projection
-   Project(mode?fov:0,asp,dim);
+    //  Ratio of the width to the height of the window
+    asp = (height>0) ? (double)width/height : 1;
+    //  Set the viewport to the entire window
+    glViewport(0,0, width,height);
+    //  Set projection
+    Project(mode?fov:0,asp,dim);
 }
 
+
+void click(){
+    int mouseX, mouseY;
+    SDL_GetMouseState(&mouseX, &mouseY);
+    // printf("x: %d, y: %d\n", mouseX, mouseY);
+
+    GLbyte color[4];
+    GLfloat depth;
+    GLuint index;
+
+    glReadPixels(mouseX, height - mouseY - 1, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, color);
+    glReadPixels(mouseX, height - mouseY - 1, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &depth);
+    glReadPixels(mouseX, height - mouseY - 1, 1, 1, GL_STENCIL_INDEX, GL_UNSIGNED_INT, &index);
+
+    printf("Clicked on pixel %d, %d, color %02hhx%02hhx%02hhx%02hhx, depth %f, stencil index %u\n",
+             mouseX, mouseX, color[0], color[1], color[2], color[3], depth, index);
+    if(index > 0 && index < 88){
+        playNote(index);
+    }
+}
 /*
  *  Start up GLUT and tell it what to do
  */
@@ -1119,7 +1146,7 @@ int main(int argc,char* argv[])
    //  Initialize SDL
    SDL_Init(SDL_INIT_VIDEO);
    //  Set size, resizable and double buffering
-   screen = SDL_SetVideoMode(750,750,0,SDL_OPENGL|SDL_RESIZABLE|SDL_DOUBLEBUF);
+   screen = SDL_SetVideoMode(width,height,0,SDL_OPENGL|SDL_RESIZABLE|SDL_DOUBLEBUF);
    if (!screen ) Fatal("Cannot set SDL video mode\n");
    //  Set window and icon labels
    SDL_WM_SetCaption("Piano Project- Vladimir Zhdanov","sdl20");
@@ -1165,6 +1192,7 @@ int main(int argc,char* argv[])
                t0 = t+0.5;  // Wait 1/2 s before repeating
                break;
             case SDL_MOUSEBUTTONDOWN:
+               click();
                break;
             default:
                //  Do nothing

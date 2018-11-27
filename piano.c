@@ -1,36 +1,8 @@
 /*
- *  More Lighting
- *
- *  Demonstrates spotlights, lighting near large objects, two sided lighting
- *  and similar advanced lighting techniques using SDL.
+ *  CSCI 4229 Project: Piano.
  *
  *  Key bindings:
- *  l/L        Toggle lighting on/off
- *  t/T        Toggle textures on/off
- *  p/P        Toggle projection between orthogonal/perspective
- *  b/B        Toggle display of quads
- *  +/-        Increase/decrease number of quads
- *  F1         Toggle smooth/flat shading
- *  F2         Toggle local viewer mode on/off
- *  F3         Toggle two sided mode on/off
- *  'i'        Toggle light at infinity
- *  a/A        Decrease/increase ambient light
- *  d/D        Decrease/increase diffuse light
- *  s/S        Decrease/increase specular light
- *  e/E        Decrease/increase emitted light
- *  n/N        Decrease/increase shininess
- *  []         Decrease/increase light elevation
- *  {}         Decrease/increase spot cutoff
- *  1/!        Decrease/increase constant attenuation
- *  2/@        Decrease/increase linear attenuation
- *  3/#        Decrease/increase quadratic attenuation
- *  x/X        Decrease/increase light X-position
- *  y/Y        Decrease/increase light Y-position
- *  z/Z        Decrease/increase light Z-position
- *  arrows     Change view angle
- *  PgDn/PgUp  Zoom in and out
- *  0          Reset view angle
- *  ESC        Exit
+ *
  */
 #include <SDL/SDL.h>
 #include <SDL/SDL_mixer.h>
@@ -65,8 +37,11 @@ float X       = 0;    // Light X position
 float Y       = 0;    // Light Y position
 float Z       = 1;    // Light Z position
 // Piano values
+int delay = 5;
 int interval = 1;
 int playing[89];
+Mix_Chunk* notes[89];
+int downTime[89];
 
 static void Vertex(double th,double ph)
 {
@@ -745,15 +720,15 @@ static void piano(double x, double y, double z,
   float bkd2 = 3/8.;
   float bkd3 = 2/8.;
 
-  pianoKey(1,  0*wkd,0,0,       1,1,1, playing[1],ph);
-  pianoKey(2,  1*wkd-bkd,0,0,   1,1,1, playing[2],ph);
-  pianoKey(3,  1*wkd,0,0,       1,1,1, playing[3],ph);
-  pianoKey(4,  2*wkd,0,0,       1,1,1, playing[4],ph);
-  pianoKey(5,  3*wkd-bkd2,0,0,  1,1,1, playing[5],ph);
-  pianoKey(6,  3*wkd,0,0,       1,1,1, playing[6],ph);
-  pianoKey(7,  4*wkd-bkd,0,0,   1,1,1, playing[7],ph);
-  pianoKey(8,  4*wkd,0,0,       1,1,1, playing[8],ph);
-  pianoKey(9,  5*wkd,0,0,       1,1,1, playing[9],ph);
+  pianoKey(1,  0*wkd,0,0,       1,1,1, playing[1 ],ph);
+  pianoKey(2,  1*wkd-bkd,0,0,   1,1,1, playing[2 ],ph);
+  pianoKey(3,  1*wkd,0,0,       1,1,1, playing[3 ],ph);
+  pianoKey(4,  2*wkd,0,0,       1,1,1, playing[4 ],ph);
+  pianoKey(5,  3*wkd-bkd2,0,0,  1,1,1, playing[5 ],ph);
+  pianoKey(6,  3*wkd,0,0,       1,1,1, playing[6 ],ph);
+  pianoKey(7,  4*wkd-bkd,0,0,   1,1,1, playing[7 ],ph);
+  pianoKey(8,  4*wkd,0,0,       1,1,1, playing[8 ],ph);
+  pianoKey(9,  5*wkd,0,0,       1,1,1, playing[9 ],ph);
   pianoKey(10, 6*wkd-bkd2,0,0,  1,1,1, playing[10],ph);
   pianoKey(11, 6*wkd,0,0,       1,1,1, playing[11],ph);
   
@@ -942,7 +917,7 @@ void display()
    else
       glDisable(GL_LIGHTING);
 
-   piano(-2.5,0,0, .1,.1,.1);
+   piano(-6.25,0,0, .25,.25,.25);
    // pianoKey(6, 0,0,0, 1,1,1, th, ph);
    //  Enable textures
    // if (ntex)
@@ -1005,6 +980,15 @@ void display()
    SDL_GL_SwapBuffers();
 }
 
+
+static void playNote(int num){
+  if(!playing[num]){
+    playing[num] = 1;
+    Mix_PlayChannel(-1, notes[num], 0);
+    downTime[num] = 100;
+  }
+}
+
 /*
  *  Call this routine when a key is pressed
  *     Returns 1 to continue, 0 to exit
@@ -1022,7 +1006,7 @@ int key()
    //  Toggle axes
    else if (keys[SDLK_b])
       axes = 1-axes;
-   //  Toggle textures
+   // //  Toggle textures
    // else if (keys[SDLK_t])
    //    ntex = 1-ntex;
    //  Toggle lighting
@@ -1032,74 +1016,33 @@ int key()
    else if (keys[SDLK_i])
       inf = 1-inf;
 
-
    if ((keys[SDLK_KP_MINUS] || keys[SDLK_MINUS]) && interval>1)
       interval--;
    if ((keys[SDLK_KP_PLUS] || keys[SDLK_EQUALS]) && interval<8)
       interval++;
    if(keys[SDLK_a])
-      playing[(interval - 1)*12 + 1] = 1 - playing[(interval - 1)*12 + 1];
+      playNote((interval - 1)*11 + 1);
    if(keys[SDLK_s])
-      playing[(interval - 1)*12 + 2] = 1 - playing[(interval - 1)*12 + 2];
+      playNote((interval - 1)*11 + 2);
    if(keys[SDLK_d])
-      playing[(interval - 1)*12 + 3] = 1 - playing[(interval - 1)*12 + 3];
+      playNote((interval - 1)*11 + 3);
    if(keys[SDLK_f])
-      playing[(interval - 1)*12 + 4] = 1 - playing[(interval - 1)*12 + 4];
+      playNote((interval - 1)*11 + 4);
    if(keys[SDLK_g])
-      playing[(interval - 1)*12 + 5] = 1 - playing[(interval - 1)*12 + 5];
+      playNote((interval - 1)*11 + 5);
    if(keys[SDLK_h])
-      playing[(interval - 1)*12 + 6] = 1 - playing[(interval - 1)*12 + 6];
+      playNote((interval - 1)*11 + 6);
    if(keys[SDLK_j])
-      playing[(interval - 1)*12 + 7] = 1 - playing[(interval - 1)*12 + 7];
+      playNote((interval - 1)*11 + 7);
    if(keys[SDLK_k])
-      playing[(interval - 1)*12 + 8] = 1 - playing[(interval - 1)*12 + 8];
+      playNote((interval - 1)*11 + 8);
    if(keys[SDLK_l])
-      playing[(interval - 1)*12 + 9] = 1 - playing[(interval - 1)*12 + 9];
+      playNote((interval - 1)*11 + 9);
    if(keys[SDLK_SEMICOLON] || keys[SDLK_COLON])
-      playing[(interval - 1)*12 + 10] = 1 - playing[(interval - 1)*12 + 10];
+      playNote((interval - 1)*11 + 10);
    if(keys[SDLK_QUOTE])
-      playing[(interval - 1)*12 + 11] = 1 - playing[(interval - 1)*12 + 11];
-   //  Switch projection mode
-   // else if (keys[SDLK_p])
-   //    mode = 1-mode;
-   // //  Change number of quadrangles
-   // else if ((keys[SDLK_KP_MINUS] || keys[SDLK_MINUS]) && num>1)
-   //    num--;
-   // else if ((keys[SDLK_KP_PLUS] || keys[SDLK_EQUALS]) && num<100)
-   //    num++;
-   //  Increase/decrease spot azimuth
-   // else if (keys[SDLK_LEFTBRACKET] && !shift)
-   //    Ph -= 5;
-   // else if (keys[SDLK_RIGHTBRACKET] && !shift)
-   //    Ph += 5;
-   // //  Increase/decrease spot cutoff angle
-   // else if (keys[SDLK_LEFTBRACKET] && shift && sco>5)
-   //    sco = sco==180 ? 90 : sco-5;
-   // else if (keys[SDLK_RIGHTBRACKET] && shift && sco<180)
-   //    sco = sco<90 ? sco+5 : 180;
-   // //  Change spot exponent
-   // else if (keys[SDLK_COMMA])
-   // {
-   //    Exp -= 0.1;
-   //    if (Exp<0) Exp=0;
-   // }
-   // else if (keys[SDLK_PERIOD])
-   //    Exp += 0.1;
-   // //  Change constant attenuation
-   // else if (keys[SDLK_1] && !shift && at0>0)
-   //    at0--;
-   // else if (keys[SDLK_1] && shift)
-   //    at0++;
-   // //  Change linear attenuation
-   // else if (keys[SDLK_2] && !shift && at1>0)
-   //    at1--;
-   // else if (keys[SDLK_2] && shift)
-   //    at1++;
-   // //  Change quadratic attenuation
-   // else if (keys[SDLK_3] && !shift && at2>0)
-   //    at2--;
-   // else if (keys[SDLK_3] && shift)
-   //    at2++;
+      playNote((interval - 1)*11 + 11);
+
    //  Light position
    else if (keys[SDLK_x] && !shift)
       X -= 0.1;
@@ -1113,31 +1056,6 @@ int key()
       Z -= 0.1;
    else if (keys[SDLK_z] && shift)
       Z += 0.1;
-   // //  Ambient level
-   // else if (keys[SDLK_a] && !shift && ambient>0)
-   //    ambient -= 5;
-   // else if (keys[SDLK_a] && shift && ambient<100)
-   //    ambient += 5;
-   // //  Diffuse level
-   // else if (keys[SDLK_d] && !shift && diffuse>0)
-   //    diffuse -= 5;
-   // else if (keys[SDLK_d] && shift && diffuse<100)
-   //    diffuse += 5;
-   // //  Specular level
-   // else if (keys[SDLK_s] && !shift && specular>0)
-   //    specular -= 5;
-   // else if (keys[SDLK_s] && shift && specular<100)
-   //    specular += 5;
-   // //  Emission level
-   // else if (keys[SDLK_e] && !shift && emission>0)
-   //    emission -= 5;
-   // else if (keys[SDLK_e] && shift && emission<100)
-   //    emission += 5;
-   // //  Shininess level
-   // else if (keys[SDLK_n] && !shift && shininess>-1)
-   //    shininess -= 1;
-   // else if (keys[SDLK_n] && shift && shininess<7)
-   //    shininess += 1;
    //  Increase/decrease asimuth
    else if (keys[SDLK_RIGHT])
       th += 5;
@@ -1196,9 +1114,7 @@ int main(int argc,char* argv[])
 {
    int run=1;
    double t0=0;
-   Mix_Chunk* music;
    SDL_Surface* screen;
-   Mix_Chunk* notes[89];
 
    //  Initialize SDL
    SDL_Init(SDL_INIT_VIDEO);
@@ -1226,11 +1142,6 @@ int main(int argc,char* argv[])
       // printf("%s\n", filepath);
    }
 
-   music = Mix_LoadWAV("notes/55.wav");
-   if (!music) Fatal("Cannot load music\n");
-   //  Play (looping)
-   Mix_PlayChannel(-1, music, -1);
-
    //  SDL event loop
    ErrCheck("init");
    while (run)
@@ -1253,6 +1164,8 @@ int main(int argc,char* argv[])
                run = key();
                t0 = t+0.5;  // Wait 1/2 s before repeating
                break;
+            case SDL_MOUSEBUTTONDOWN:
+               break;
             default:
                //  Do nothing
                break;
@@ -1266,8 +1179,16 @@ int main(int argc,char* argv[])
       //  Display
       Th = fmod(90*t,360.0);
       display();
+
+      // Counts how long the key has been pressed down
+      for(int i = 1; i < 89; i++){
+         if(downTime[i]){
+           downTime[i] -= delay;
+           if(!downTime[i]) playing[i] = 0; 
+         } 
+      }
       //  Slow down display rate to about 100 fps by sleeping 5ms
-      SDL_Delay(5);
+      SDL_Delay(delay);
    }
    //  Shut down SDL
    Mix_CloseAudio();

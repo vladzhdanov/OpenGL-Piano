@@ -17,3 +17,73 @@ Key bindings
   PgDn/PgUp  Zoom in and out
   0          Reset view angle
   ESC        Exit
+
+
+Extra Code (Ignore this):
+   //  Switch projection mode
+   // else if (keys[SDLK_p])
+   //    mode = 1-mode;
+   // //  Change number of quadrangles
+   // else if ((keys[SDLK_KP_MINUS] || keys[SDLK_MINUS]) && num>1)
+   //    num--;
+   // else if ((keys[SDLK_KP_PLUS] || keys[SDLK_EQUALS]) && num<100)
+   //    num++;
+   //  Increase/decrease spot azimuth
+   // else if (keys[SDLK_LEFTBRACKET] && !shift)
+   //    Ph -= 5;
+   // else if (keys[SDLK_RIGHTBRACKET] && !shift)
+   //    Ph += 5;
+   // //  Increase/decrease spot cutoff angle
+   // else if (keys[SDLK_LEFTBRACKET] && shift && sco>5)
+   //    sco = sco==180 ? 90 : sco-5;
+   // else if (keys[SDLK_RIGHTBRACKET] && shift && sco<180)
+   //    sco = sco<90 ? sco+5 : 180;
+   // //  Change spot exponent
+   // else if (keys[SDLK_COMMA])
+   // {
+   //    Exp -= 0.1;
+   //    if (Exp<0) Exp=0;
+   // }
+   // else if (keys[SDLK_PERIOD])
+   //    Exp += 0.1;
+   // //  Change constant attenuation
+   // else if (keys[SDLK_1] && !shift && at0>0)
+   //    at0--;
+   // else if (keys[SDLK_1] && shift)
+   //    at0++;
+   // //  Change linear attenuation
+   // else if (keys[SDLK_2] && !shift && at1>0)
+   //    at1--;
+   // else if (keys[SDLK_2] && shift)
+   //    at1++;
+   // //  Change quadratic attenuation
+   // else if (keys[SDLK_3] && !shift && at2>0)
+   //    at2--;
+   // else if (keys[SDLK_3] && shift)
+   //    at2++;
+
+      // //  Ambient level
+   // else if (keys[SDLK_a] && !shift && ambient>0)
+   //    ambient -= 5;
+   // else if (keys[SDLK_a] && shift && ambient<100)
+   //    ambient += 5;
+   // //  Diffuse level
+   // else if (keys[SDLK_d] && !shift && diffuse>0)
+   //    diffuse -= 5;
+   // else if (keys[SDLK_d] && shift && diffuse<100)
+   //    diffuse += 5;
+   // //  Specular level
+   // else if (keys[SDLK_s] && !shift && specular>0)
+   //    specular -= 5;
+   // else if (keys[SDLK_s] && shift && specular<100)
+   //    specular += 5;
+   // //  Emission level
+   // else if (keys[SDLK_e] && !shift && emission>0)
+   //    emission -= 5;
+   // else if (keys[SDLK_e] && shift && emission<100)
+   //    emission += 5;
+   // //  Shininess level
+   // else if (keys[SDLK_n] && !shift && shininess>-1)
+   //    shininess -= 1;
+   // else if (keys[SDLK_n] && shift && shininess<7)
+   //    shininess += 1;

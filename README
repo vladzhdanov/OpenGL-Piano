@@ -9,7 +9,6 @@ The scale parameter can be used to change the size of the object
 The color sets a default color when the OBJ file does not have color settings.
 
 Key bindings
-  p          Toggle between orthogonal/perspective projections
   s          Start/stop light
   -/+        Decrease/increase light elevation
   a          Toggle axes

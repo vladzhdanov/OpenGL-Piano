@@ -9,11 +9,11 @@
 #include "CSCIx229.h"
 
 int width = 750; int height = 750;
-int axes=1;       //  Display axes
+int axes=0;       //  Display axes
 int mode=1;       //  Projection mode
 int side=0;       //  Two sided mode
 int ntex=1;       //  Texture mode
-int th=0,ph=0;    //  View angles
+int th=0,ph=30;    //  View angles
 int Th=0,Ph=30;   //  Light angles
 float sco=180;    //  Spot cutoff angle
 float Exp=0;      //  Spot exponent
@@ -21,23 +21,23 @@ int at0=100;      //  Constant  attenuation %
 int at1=0;        //  Linear    attenuation %
 int at2=0;        //  Quadratic attenuation %
 int fov=53;       //  Field of view (for perspective)
-int light=0;      //  Lighting
+int light=1;      //  Lighting
 double asp=1;     //  Aspect ratio
-double dim=4;     //  Size of world
+double dim=6.5;     //  Size of world
 // Light values
 int num       =   1;  // Number of quads
 int inf       =   0;  // Infinite distance light
 int smooth    =   1;  // Smooth/Flat shading
 int local     =   0;  // Local Viewer Model
 int emission  =   0;  // Emission intensity (%)
-int ambient   =   0;  // Ambient intensity (%)
+int ambient   =  20;  // Ambient intensity (%)
 int diffuse   = 100;  // Diffuse intensity (%)
 int specular  =   0;  // Specular intensity (%)
 int shininess =   0;  // Shininess (power of two)
 float shiny   =   1; // Shininess (value)
 float X       = 0;    // Light X position
-float Y       = 0;    // Light Y position
-float Z       = 1;    // Light Z position
+float Y       = 1.5;    // Light Y position
+float Z       = -.5;    // Light Z position
 // Piano values
 int highlight = 1;
 int delay = 5;
@@ -61,6 +61,7 @@ static void pianoKey(int num,
   glScaled(dx,dy,dz);
 
   glStencilFunc(GL_ALWAYS, num, -1);
+
   // First key has a unique shape 
   if(num == 1){
     num = -1;
@@ -80,11 +81,6 @@ static void pianoKey(int num,
           glRotatef(6 , 1,0,0);
       glTranslated(0,0,6);
   }
-    //   case 0:
-    // case 2:
-    // case 5:
-    // case 7:
-    // case 10:
 
   switch(num){
     // White key with hole on right
@@ -157,7 +153,7 @@ static void pianoKey(int num,
       glEnd();
       break;
 
-     // Black key
+    // Black key
     case 0:
     case 2:
     case 5:
@@ -704,6 +700,7 @@ static void pianoKey(int num,
 
       glEnd();
       break;
+
     default:
       break;
   }
@@ -854,7 +851,8 @@ void display()
    // int i,j;
    const double len=2.0;  //  Length of axes
    // double mul = 2.0/num;
-   float Position[] = {X+Cos(Th),Y+Sin(Th),Z,1-inf};
+   // float Position[] = {X+Cos(Th),Y+Sin(Th),Z,1-inf};
+   float Position[] = {X+6*Cos(Th),Y,Z+Sin(Th),1-inf};
    //  Erase the window and the depth buffer
    glClearStencil(0);
    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);

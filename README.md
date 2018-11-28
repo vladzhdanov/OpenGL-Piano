@@ -1,14 +1,17 @@
 # CSCI 4229 Project: OpenGL Piano
 
 Vladimir Zhdanov
+
 CSCI4229 Fall 2018
 
 Dependencies:
-	-OpenGL
-	-GLUT
-	-SDL and SDL_mixer
+1.OpenGL
+2.GLUT
+3.SDL and SDL_mixer
+
 
 To run the program: type "make" and run the piano executable file once its finished compiling
+
 
 Key bindings
   p          Toggle between orthogonal/perspective projections

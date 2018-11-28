@@ -1,4 +1,4 @@
-# CSCI 4229 Project: OpenGL Piano
+# CSCI 4229 Final Project: OpenGL Piano
 
 ###### Vladimir Zhdanov
 
@@ -8,7 +8,6 @@
 1. OpenGL
 2. GLUT
 3. SDL 1.0 and SDL_mixer
-
 
 #### To run the program: 
 Type "make" and run the piano executable file once its finished compiling
@@ -39,3 +38,6 @@ Type "make" and run the piano executable file once its finished compiling
 | mouse click | Play key mouse is hovered over  |
 
 
+#### Things Left to do:
+* Finish the model of the piano (case around the keys)
+* Add textures to piano model

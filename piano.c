@@ -8,19 +8,16 @@
 #include <SDL/SDL_mixer.h>
 #include "CSCIx229.h"
 
-int width = 750; int height = 750;
+int width = 750; 
+int height = 750;
 int axes=0;       //  Display axes
-int mode=1;       //  Projection mode
-int side=0;       //  Two sided mode
 int ntex=1;       //  Texture mode
 int th=0,ph=30;    //  View angles
 int Th=0,Ph=30;   //  Light angles
-float sco=180;    //  Spot cutoff angle
-float Exp=0;      //  Spot exponent
 int at0=100;      //  Constant  attenuation %
-int at1=0;        //  Linear    attenuation %
+int at1=5;        //  Linear    attenuation %
 int at2=0;        //  Quadratic attenuation %
-int fov=53;       //  Field of view (for perspective)
+int fov=55;       //  Field of view (for perspective)
 int light=1;      //  Lighting
 double asp=1;     //  Aspect ratio
 double dim=6.5;     //  Size of world
@@ -28,7 +25,7 @@ double dim=6.5;     //  Size of world
 int num       =   1;  // Number of quads
 int inf       =   0;  // Infinite distance light
 int smooth    =   1;  // Smooth/Flat shading
-int local     =   0;  // Local Viewer Model
+int local     =   1;  // Local Viewer Model
 int emission  =   0;  // Emission intensity (%)
 int ambient   =  20;  // Ambient intensity (%)
 int diffuse   = 100;  // Diffuse intensity (%)
@@ -38,13 +35,14 @@ float shiny   =   1; // Shininess (value)
 float X       = 0;    // Light X position
 float Y       = 1.5;    // Light Y position
 float Z       = -.5;    // Light Z position
+
 // Piano values
-int highlight = 1;
-int delay = 5;
-int interval = 1;
-int playing[89];
-Mix_Chunk* notes[89];
-int downTime[89];
+int highlight = 1; // Highlight keys when played
+int delay = 5; // Screen Time delay
+int interval = 4; // Current keyboard key interval
+int playing[89];  // Key being played or not
+Mix_Chunk* notes[89]; // Note sounds
+int downTime[89];    // Counts how long since key pressed
 
 static void Vertex(double th,double ph)
 {
@@ -848,9 +846,7 @@ static void ball(double x,double y,double z,double r)
 
 void display()
 {
-   // int i,j;
    const double len=2.0;  //  Length of axes
-   // double mul = 2.0/num;
    // float Position[] = {X+Cos(Th),Y+Sin(Th),Z,1-inf};
    float Position[] = {X+6*Cos(Th),Y,Z+Sin(Th),1-inf};
    //  Erase the window and the depth buffer
@@ -861,20 +857,12 @@ void display()
    //  Undo previous transformations
    glLoadIdentity();
    //  Perspective - set eye position
-   if (mode)
-   {
-      double Ex = -2*dim*Sin(th)*Cos(ph);
-      double Ey = +2*dim        *Sin(ph);
-      double Ez = +2*dim*Cos(th)*Cos(ph);
-      gluLookAt(Ex,Ey,Ez , 0,0,0 , 0,Cos(ph),0);
-   }
-   //  Orthogonal - set world orientation
-   else
-   {
-      glRotatef(ph,1,0,0);
-      glRotatef(th,0,1,0);
-   }
-   glShadeModel(smooth?GL_SMOOTH:GL_FLAT);
+   double Ex = -2*dim*Sin(th)*Cos(ph);
+   double Ey = +2*dim        *Sin(ph);
+   double Ez = +2*dim*Cos(th)*Cos(ph);
+   gluLookAt(Ex,Ey,Ez , 0,0,0 , 0,Cos(ph),0);
+
+   glShadeModel(GL_SMOOTH);
    //  Light switch
    if (light)
    {
@@ -884,7 +872,6 @@ void display()
       float Specular[]  = {0.01*specular,0.01*specular,0.01*specular,1.0};
       //  Spotlight color and direction
       float yellow[] = {1.0,1.0,0.0,1.0};
-      float Direction[] = {Cos(Th)*Sin(Ph),Sin(Th)*Sin(Ph),-Cos(Ph),0};
       //  Draw light position as ball (still no lighting here)
       ball(Position[0],Position[1],Position[2] , 0.1);
       //  OpenGL should normalize normal vectors
@@ -893,8 +880,6 @@ void display()
       glEnable(GL_LIGHTING);
       //  Location of viewer for specular calculations
       glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER,local);
-      //  Two sided mode
-      glLightModeli(GL_LIGHT_MODEL_TWO_SIDE,side);
       //  glColor sets ambient and diffuse color materials
       glColorMaterial(GL_FRONT_AND_BACK,GL_AMBIENT_AND_DIFFUSE);
       glEnable(GL_COLOR_MATERIAL);
@@ -908,10 +893,7 @@ void display()
       glLightfv(GL_LIGHT0,GL_DIFFUSE ,Diffuse);
       glLightfv(GL_LIGHT0,GL_SPECULAR,Specular);
       glLightfv(GL_LIGHT0,GL_POSITION,Position);
-      //  Set spotlight parameters
-      glLightfv(GL_LIGHT0,GL_SPOT_DIRECTION,Direction);
-      glLightf(GL_LIGHT0,GL_SPOT_CUTOFF,sco);
-      glLightf(GL_LIGHT0,GL_SPOT_EXPONENT,Exp);
+
       //  Set attenuation
       glLightf(GL_LIGHT0,GL_CONSTANT_ATTENUATION ,at0/100.0);
       glLightf(GL_LIGHT0,GL_LINEAR_ATTENUATION   ,at1/100.0);
@@ -969,13 +951,13 @@ void display()
    //  Display parameters
    glWindowPos2i(5,5);
    Print("Angle=%d,%d  Dim=%.1f Projection=%s Light=%s Interval=%d",
-     th,ph,dim,mode?"Perpective":"Orthogonal",light?"On":"Off", interval);
+     th,ph,dim,"Perpective",light?"On":"Off", interval);
    if (light)
    {
       glWindowPos2i(5,65);
-      Print("Cutoff=%.0f Exponent=%.1f Direction=%d,%d Attenuation=%.2f,%.2f,%.2f",sco,Exp,Th,Ph,at0/100.0,at1/100.0,at2/100.0);
+      Print("Direction=%d,%d Attenuation=%.2f,%.2f,%.2f", Th,Ph,at0/100.0,at1/100.0,at2/100.0);
       glWindowPos2i(5,45);
-      Print("Model=%s LocalViewer=%s TwoSided=%s Position=%.1f,%.1f,%.1f,%.1f Num=%d",smooth?"Smooth":"Flat",local?"On":"Off",side?"On":"Off",Position[0],Position[1],Position[2],Position[3],num);
+      Print("LocalViewer=%s Position=%.1f,%.1f,%.1f,%.1f Num=%d", local?"On":"Off", Position[0],Position[1],Position[2],Position[3],num);
       glWindowPos2i(5,25);
       Print("Ambient=%d  Diffuse=%d Specular=%d Emission=%d Shininess=%.0f",ambient,diffuse,specular,emission,shiny);
    }
@@ -1077,16 +1059,7 @@ int key()
    //  PageDown key - decrease dim
    else if (keys[SDLK_PAGEUP] && dim>1)
       dim -= 0.1;
-   //  Smooth color model
-   else if (keys[SDLK_F1])
-      smooth = 1-smooth;
-   //  Local Viewer
-   else if (keys[SDLK_F2])
-      local = 1-local;
-   //  Two sided mode
-   else if (keys[SDLK_F3])
-      side = 1-side;
-   //  Translate shininess power to value (-1 => 0)
+
    shiny = shininess<0 ? 0 : pow(2.0,shininess);
    //  Wrap angles
    Th %= 360;
@@ -1094,7 +1067,7 @@ int key()
    th %= 360;
    ph %= 360;
    //  Update projection
-   Project(mode?fov:0,asp,dim);
+   Project(fov,asp,dim);
    //  Tell GLUT it is necessary to redisplay the scene
    return 1;
 }
@@ -1109,7 +1082,7 @@ void reshape(int width,int height)
     //  Set the viewport to the entire window
     glViewport(0,0, width,height);
     //  Set projection
-    Project(mode?fov:0,asp,dim);
+    Project(fov,asp,dim);
 }
 
 

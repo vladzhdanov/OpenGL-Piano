@@ -1002,7 +1002,8 @@ int key()
    //  Toggle infinity
    else if (keys[SDLK_i])
       inf = 1-inf;
-
+   
+   // Piano playing functions
    if ((keys[SDLK_KP_MINUS] || keys[SDLK_MINUS]) && interval>1)
       interval--;
    if ((keys[SDLK_KP_PLUS] || keys[SDLK_EQUALS]) && interval<8)
@@ -1029,6 +1030,10 @@ int key()
       playNote((interval - 1)*11 + 10);
    if(keys[SDLK_QUOTE])
       playNote((interval - 1)*11 + 11);
+
+   // Key highlighting
+   else if (keys[SDLK_n])
+      highlight = 1 - highlight;
 
    //  Light position
    else if (keys[SDLK_x] && !shift)

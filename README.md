@@ -36,8 +36,14 @@ Type "make" and run the piano executable file once its finished compiling
 | l           | Play 9th key in interval        |
 | ;           | Play 10th key in interval       |
 | '           | Play 11th key in interval       |
-| mouse click | Play key mouse is hovered over  |
+| left click  | Play key mouse is hovered over  |
 
+#### Progress Made so far:
+* Created an accurate representation of piano keys
+* Added lighting to piano keys
+* The correct note sound plays for each specified key, and the correct key will move
+* Able to play several notes at once (chords) by using multiple audio channels
+* Added the ability to click on any note with the mouse and it will animate and play the correct note
 
 #### Things Left to do:
 * Finish the model of the piano (case around the keys)

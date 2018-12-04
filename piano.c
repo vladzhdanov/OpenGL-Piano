@@ -1105,7 +1105,7 @@ void click(){
     glReadPixels(mouseX, height - mouseY - 1, 1, 1, GL_STENCIL_INDEX, GL_UNSIGNED_INT, &index);
 
     printf("Clicked on pixel %d, %d, color %02hhx%02hhx%02hhx%02hhx, depth %f, stencil index %u\n",
-             mouseX, mouseX, color[0], color[1], color[2], color[3], depth, index);
+             mouseX, mouseY, color[0], color[1], color[2], color[3], depth, index);
     if(index > 0 && index < 88){
         playNote(index);
     }
@@ -1121,6 +1121,7 @@ int main(int argc,char* argv[])
 
    //  Initialize SDL
    SDL_Init(SDL_INIT_VIDEO);
+   SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 1);
    //  Set size, resizable and double buffering
    screen = SDL_SetVideoMode(width,height,0,SDL_OPENGL|SDL_RESIZABLE|SDL_DOUBLEBUF);
    if (!screen ) Fatal("Cannot set SDL video mode\n");

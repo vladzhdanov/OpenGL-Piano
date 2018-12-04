@@ -305,21 +305,21 @@ int LoadOBJ(const char* file)
             //  Try Vertex/Texture/Normal triplet
             if (sscanf(str,"%d/%d/%d",&Kv,&Kt,&Kn)==3)
             {
-               if (Kv<0 || Kv>Nv/3) Fatal("Vertex %d out of range 1-%d\n",Kv,Nv/3);
-               if (Kn<0 || Kn>Nn/3) Fatal("Normal %d out of range 1-%d\n",Kn,Nn/3);
-               if (Kt<0 || Kt>Nt/2) Fatal("Texture %d out of range 1-%d\n",Kt,Nt/2);
+               if (abs(Kv)>Nv/3) Fatal("Vertex %d out of range 1-%d\n",Kv,Nv/3);
+               if (abs(Kn)>Nn/3) Fatal("Normal %d out of range 1-%d\n",Kn,Nn/3);
+               if (abs(Kt)>Nt/2) Fatal("Texture %d out of range 1-%d\n",Kt,Nt/2);
             }
             //  Try Vertex//Normal pairs
             else if (sscanf(str,"%d//%d",&Kv,&Kn)==2)
             {
-               if (Kv<0 || Kv>Nv/3) Fatal("Vertex %d out of range 1-%d\n",Kv,Nv/3);
-               if (Kn<0 || Kn>Nn/3) Fatal("Normal %d out of range 1-%d\n",Kn,Nn/3);
+               if (abs(Kv)>Nv/3) Fatal("Vertex %d out of range 1-%d\n",Kv,Nv/3);
+               if (abs(Kn)>Nn/3) Fatal("Normal %d out of range 1-%d\n",Kn,Nn/3);
                Kt = 0;
             }
             //  Try Vertex index
             else if (sscanf(str,"%d",&Kv)==1)
             {
-               if (Kv<0 || Kv>Nv/3) Fatal("Vertex %d out of range 1-%d\n",Kv,Nv/3);
+               if (abs(Kv)>Nv/3) Fatal("Vertex %d out of range 1-%d\n",Kv,Nv/3);
                Kn = 0;
                Kt = 0;
             }
@@ -327,9 +327,14 @@ int LoadOBJ(const char* file)
             else
                Fatal("Invalid facet %s\n",str);
             //  Draw vectors
-            if (Kt) glTexCoord2fv(T+2*(Kt-1));
-            if (Kn) glNormal3fv(N+3*(Kn-1));
-            if (Kv) glVertex3fv(V+3*(Kv-1));
+            if (Kt > 0) glTexCoord2fv(T+2*(Kt-1));
+            else if(Kt < 0) glTexCoord2fv(T+Nt+2*Kt);
+
+            if (Kn > 0) glNormal3fv(N+3*(Kn-1));
+            else if (Kn < 0) glNormal3fv(N+Nn+3*Kn);
+
+            if (Kv > 0) glVertex3fv(V+3*(Kv-1));
+            else if (Kv < 0) glVertex3fv(V+Nv+3*Kv);
          }
          glEnd();
       }

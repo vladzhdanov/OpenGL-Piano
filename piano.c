@@ -1106,7 +1106,7 @@ void click(){
 
     printf("Clicked on pixel %d, %d, color %02hhx%02hhx%02hhx%02hhx, depth %f, stencil index %u\n",
              mouseX, mouseY, color[0], color[1], color[2], color[3], depth, index);
-    if(index > 0 && index < 88){
+    if(index > 0 && index <= 88){
         playNote(index);
     }
 }

@@ -25,6 +25,7 @@ fatal.o: fatal.c CSCIx229.h
 loadtexbmp.o: loadtexbmp.c CSCIx229.h
 printsdl.o: printsdl.c CSCIx229.h
 project.o: project.c CSCIx229.h
+object.o: object.c CSCIx229.h
 piano.o: piano.c CSCIx229.h
 
 # Compile rules
@@ -34,7 +35,7 @@ piano.o: piano.c CSCIx229.h
 	g++ -c $(CFLG) $<
 
 #  Link
-piano:piano.o fatal.o loadtexbmp.o project.o errcheck.o printsdl.o
+piano:piano.o fatal.o loadtexbmp.o project.o errcheck.o printsdl.o object.o
 	gcc -O3 -o $@ $^  -lSDL -lSDL_mixer -lGLU -lGL -lm
 
 #  Clean

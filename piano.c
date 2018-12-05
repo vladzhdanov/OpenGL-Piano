@@ -960,8 +960,6 @@ void display()
      th,ph,dim,"Perpective",light?"On":"Off", interval);
    if (light)
    {
-      glWindowPos2i(5,85);
-      Print("x:%f, y:%f, z:%f, scale:%f", px, py, pz, scale);
       glWindowPos2i(5,65);
       Print("Direction=%d,%d Attenuation=%.2f,%.2f,%.2f", Th,Ph,at0/100.0,at1/100.0,at2/100.0);
       glWindowPos2i(5,45);

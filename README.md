@@ -23,7 +23,7 @@ Type "make" and run the piano executable file once its finished compiling
 |  ESC        | Exit                            |
 | b           | Toggle axes                     |
 | m           | Toggle light                    |
-| h  		  |	Toggle key highlighting			|
+| n  		  |	Toggle key highlighting			|
 |  -/+        | Decrease/Increase note interval |
 | a           | Play 1st key in interval        |
 | s           | Play 2nd key in interval        |

@@ -21,6 +21,10 @@ int fov=55;       //  Field of view (for perspective)
 int light=1;      //  Lighting
 double asp=1;     //  Aspect ratio
 double dim=6.5;     //  Size of world
+float scale = 36.7; 
+float px = .65, py = -.66, pz = -.94;
+
+
 // Light values
 int num       =   1;  // Number of quads
 int inf       =   0;  // Infinite distance light
@@ -32,9 +36,12 @@ int diffuse   = 100;  // Diffuse intensity (%)
 int specular  =   0;  // Specular intensity (%)
 int shininess =   0;  // Shininess (power of two)
 float shiny   =   1; // Shininess (value)
-float X       = 0;    // Light X position
+float X       =   0;    // Light X position
 float Y       = 1.5;    // Light Y position
 float Z       = -.5;    // Light Z position
+
+int obj;
+int text[1];
 
 // Piano values
 int highlight = 1; // Highlight keys when played
@@ -711,7 +718,28 @@ static void piano(double x, double y, double z,
   glPushMatrix(); 
   glTranslated(x,y,z);
   glScaled(dx,dy,dz);
+  
+  float pianoAmbient[4] =  {0, 0, 0, 1};
+  float pianoDiffuse[4] =  {0.5880, 0.5880, 0.5880, 1};
+  float pianoSpecular[4] = {0.5040, 0.5040, 0.5040, 1};
+  float pianoShininess[1] = {10};
+  glMaterialfv(GL_FRONT_AND_BACK,GL_AMBIENT, pianoAmbient);
+  glMaterialfv(GL_FRONT_AND_BACK,GL_DIFFUSE, pianoDiffuse);
+  glMaterialfv(GL_FRONT_AND_BACK,GL_SPECULAR, pianoSpecular);
+  glMaterialfv(GL_FRONT_AND_BACK,GL_SHININESS, pianoShininess);
 
+  glEnable(GL_TEXTURE_2D);
+  glTexEnvi(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_MODULATE);
+  glStencilFunc(GL_ALWAYS, 0, -1);
+
+  glPushMatrix();
+  glScaled(scale, scale, scale);
+  glTranslated(px, py, pz);
+  glRotatef(90, 0, 1, 0);
+  glCallList(obj);
+  glPopMatrix();
+
+  glDisable(GL_TEXTURE_2D);
   // White key distance
   float wkd  = 15./16.;
   // Various black key offsets from white keys
@@ -828,7 +856,7 @@ static void ball(double x,double y,double z,double r)
    glTranslated(x,y,z);
    glScaled(r,r,r);
    //  Bands of latitude
-   glColor3f(1,1,0);
+   glColor3f(1,1,1);
    for (ph=-90;ph<90;ph+=10)
    {
       glBegin(GL_QUAD_STRIP);
@@ -871,7 +899,7 @@ void display()
       float Diffuse[]   = {0.01*diffuse ,0.01*diffuse ,0.01*diffuse ,1.0};
       float Specular[]  = {0.01*specular,0.01*specular,0.01*specular,1.0};
       //  Spotlight color and direction
-      float yellow[] = {1.0,1.0,0.0,1.0};
+      float yellow[] = {1.0,1.0,1.0,1.0};
       //  Draw light position as ball (still no lighting here)
       ball(Position[0],Position[1],Position[2] , 0.1);
       //  OpenGL should normalize normal vectors
@@ -895,9 +923,9 @@ void display()
       glLightfv(GL_LIGHT0,GL_POSITION,Position);
 
       //  Set attenuation
-      glLightf(GL_LIGHT0,GL_CONSTANT_ATTENUATION ,at0/100.0);
-      glLightf(GL_LIGHT0,GL_LINEAR_ATTENUATION   ,at1/100.0);
-      glLightf(GL_LIGHT0,GL_QUADRATIC_ATTENUATION,at2/100.0);
+      // glLightf(GL_LIGHT0,GL_CONSTANT_ATTENUATION ,at0/100.0);
+      // glLightf(GL_LIGHT0,GL_LINEAR_ATTENUATION   ,at1/100.0);
+      // glLightf(GL_LIGHT0,GL_QUADRATIC_ATTENUATION,at2/100.0);
    }
    else
       glDisable(GL_LIGHTING);
@@ -905,28 +933,6 @@ void display()
    glEnable(GL_STENCIL_TEST);
    glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
    piano(-6.25,0,0, .25,.25,.25);
-   // pianoKey(6, 0,0,0, 1,1,1, th, ph);
-   //  Enable textures
-   // if (ntex)
-   //    glEnable(GL_TEXTURE_2D);
-   // else
-      // glDisable(GL_TEXTURE_2D);
-   // glTexEnvi(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_MODULATE);
-   // //  Draw the wall
-   // glColor3f(1.0,1.0,1.0);
-   // glNormal3f(0,0,1); 
-   // glBegin(GL_QUADS);
-   // for (i=0;i<num;i++)
-   //    for (j=0;j<num;j++)
-   //    {
-   //       glTexCoord2d(mul*(i+0),mul*(j+0)); glVertex2d(5*mul*(i+0)-5,5*mul*(j+0)-5);
-   //       glTexCoord2d(mul*(i+1),mul*(j+0)); glVertex2d(5*mul*(i+1)-5,5*mul*(j+0)-5);
-   //       glTexCoord2d(mul*(i+1),mul*(j+1)); glVertex2d(5*mul*(i+1)-5,5*mul*(j+1)-5);
-   //       glTexCoord2d(mul*(i+0),mul*(j+1)); glVertex2d(5*mul*(i+0)-5,5*mul*(j+1)-5);
-   //    }
-   // glEnd();
-   // glDisable(GL_TEXTURE_2D);
-   //  Draw axes - no lighting from here on
 
    glDisable(GL_LIGHTING);
    glColor3f(1,1,1);
@@ -954,6 +960,8 @@ void display()
      th,ph,dim,"Perpective",light?"On":"Off", interval);
    if (light)
    {
+      glWindowPos2i(5,85);
+      Print("x:%f, y:%f, z:%f, scale:%f", px, py, pz, scale);
       glWindowPos2i(5,65);
       Print("Direction=%d,%d Attenuation=%.2f,%.2f,%.2f", Th,Ph,at0/100.0,at1/100.0,at2/100.0);
       glWindowPos2i(5,45);
@@ -993,10 +1001,6 @@ int key()
    //  Toggle axes
    else if (keys[SDLK_b])
       axes = 1-axes;
-   // //  Toggle textures
-   // else if (keys[SDLK_t])
-   //    ntex = 1-ntex;
-   //  Toggle lighting
    else if (keys[SDLK_m])
       light = 1-light;
    //  Toggle infinity
@@ -1037,30 +1041,34 @@ int key()
 
    //  Light position
    else if (keys[SDLK_x] && !shift)
-      X -= 0.1;
+      X -= 0.01;
    else if (keys[SDLK_x] && shift)
-      X += 0.1;
+      X += 0.01;
    else if (keys[SDLK_y] && !shift)
-      Y -= 0.1;
+      Y -= 0.01;
    else if (keys[SDLK_y] && shift)
-      Y += 0.1;
+      Y += 0.01;
    else if (keys[SDLK_z] && !shift)
-      Z -= 0.1;
+      Z -= 0.01;
    else if (keys[SDLK_z] && shift)
-      Z += 0.1;
+      Z += 0.01;
+
    //  Increase/decrease asimuth
    else if (keys[SDLK_RIGHT])
       th += 5;
    else if (keys[SDLK_LEFT])
       th -= 5;
+
    //  Increase/decrease elevation
    else if (keys[SDLK_UP])
       ph += 5;
    else if (keys[SDLK_DOWN])
       ph -= 5;
+
    //  PageUp key - increase dim
    else if (keys[SDLK_PAGEDOWN])
       dim += 0.1;
+
    //  PageDown key - decrease dim
    else if (keys[SDLK_PAGEUP] && dim>1)
       dim -= 0.1;
@@ -1131,6 +1139,8 @@ int main(int argc,char* argv[])
    reshape(screen->w,screen->h);
 
    //  Load textures
+   text[0] = LoadTexBMP("obj/piano_texture.bmp");
+   obj = LoadOBJ("obj/piano.obj");
    // LoadTexBMP("brick.bmp");
 
    //  Initialize audio

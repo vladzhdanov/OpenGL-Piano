@@ -48,3 +48,7 @@ Type "make" and run the piano executable file once its finished compiling
 #### Things Left to do:
 * Finish the model of the piano (case around the keys)
 * Add textures to piano model
+
+#### References:
+[Grand Piano .obj file](https://free3d.com/3d-model/piano-8271.html)
+[Piano Sounds](https://freesound.org/people/jobro/packs/2489/)

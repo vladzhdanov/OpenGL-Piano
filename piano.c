@@ -26,7 +26,6 @@ float px = .65, py = -.66, pz = -.94;
 
 
 // Light values
-int num       =   1;  // Number of quads
 int inf       =   0;  // Infinite distance light
 int smooth    =   1;  // Smooth/Flat shading
 int local     =   1;  // Local Viewer Model
@@ -41,9 +40,10 @@ float Y       = 1.5;    // Light Y position
 float Z       = -.5;    // Light Z position
 
 int obj;
-int text[1];
+int tex[2];
 
 // Piano values
+// float hy = 10;
 int highlight = 1; // Highlight keys when played
 int delay = 5; // Screen Time delay
 int interval = 4; // Current keyboard key interval
@@ -730,6 +730,7 @@ static void piano(double x, double y, double z,
 
   glEnable(GL_TEXTURE_2D);
   glTexEnvi(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_MODULATE);
+  glBindTexture(GL_TEXTURE_2D,tex[0]);
   glStencilFunc(GL_ALWAYS, 0, -1);
 
   glPushMatrix();
@@ -932,8 +933,29 @@ void display()
 
    glEnable(GL_STENCIL_TEST);
    glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
-   piano(-6.25,0,0, .25,.25,.25);
+   piano(-6.25,6.06,0, .25,.25,.25);
+   glStencilFunc(GL_ALWAYS, 0, -1);
+   // printf("%f\n", hy);
 
+   glEnable(GL_TEXTURE_2D);
+   glTexEnvi(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_MODULATE);
+   glBindTexture(GL_TEXTURE_2D,tex[1]);
+   glBegin(GL_QUADS);
+   glNormal3f(0, 1, 0);
+   for(int i = -50; i <= 50; i++){
+      for(int j = -50; j <= 50; j++){
+         glTexCoord2f(i/10., j/10.); glVertex3d(i, 0, j); 
+         glTexCoord2f(i/10., (j+1)/10.); glVertex3d(i, 0, j+1); 
+         glTexCoord2f((i+1)/10., (j+1)/10.); glVertex3d(i+1, 0, j+1); 
+         glTexCoord2f((i+1)/10., j/10.); glVertex3d(i+1, 0, j); 
+      }
+   }
+   // glTexCoord2f(  0,   0); glVertex3d(-30, 0, -30); 
+   // glTexCoord2f(  0,  15); glVertex3d(-30, 0,  30); 
+   // glTexCoord2f( 15,  15); glVertex3d( 30, 0,  30); 
+   // glTexCoord2f( 15,   0); glVertex3d( 30, 0, -30); 
+   glEnd();
+   glDisable(GL_TEXTURE_2D);
    glDisable(GL_LIGHTING);
    glColor3f(1,1,1);
    if (axes)
@@ -963,7 +985,7 @@ void display()
       glWindowPos2i(5,65);
       Print("Direction=%d,%d Attenuation=%.2f,%.2f,%.2f", Th,Ph,at0/100.0,at1/100.0,at2/100.0);
       glWindowPos2i(5,45);
-      Print("LocalViewer=%s Position=%.1f,%.1f,%.1f,%.1f Num=%d", local?"On":"Off", Position[0],Position[1],Position[2],Position[3],num);
+      Print("LocalViewer=%s Position=%.1f,%.1f,%.1f,%.1f", local?"On":"Off", Position[0],Position[1],Position[2],Position[3]);
       glWindowPos2i(5,25);
       Print("Ambient=%d  Diffuse=%d Specular=%d Emission=%d Shininess=%.0f",ambient,diffuse,specular,emission,shiny);
    }
@@ -1050,6 +1072,10 @@ int key()
       Z -= 0.01;
    else if (keys[SDLK_z] && shift)
       Z += 0.01;
+   // else if (keys[SDLK_v] && !shift)
+   //    hy -= 0.01;
+   // else if (keys[SDLK_v] && shift)
+   //    hy += 0.01;
 
    //  Increase/decrease asimuth
    else if (keys[SDLK_RIGHT])
@@ -1137,7 +1163,8 @@ int main(int argc,char* argv[])
    reshape(screen->w,screen->h);
 
    //  Load textures
-   text[0] = LoadTexBMP("obj/piano_texture.bmp");
+   tex[0] = LoadTexBMP("obj/piano_texture_fixed.bmp");
+   tex[1] = LoadTexBMP("obj/wood.bmp");
    obj = LoadOBJ("obj/piano.obj");
    // LoadTexBMP("brick.bmp");
 

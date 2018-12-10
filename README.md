@@ -1,4 +1,4 @@
-# CSCI 4229 Final Project: OpenGL Piano
+# Final Project: OpenGL Piano
 
 ### Vladimir Zhdanov
 ### CSCI4229 Computer Graphics, Fall 2018

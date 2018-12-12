@@ -1,15 +1,15 @@
 # Final Project: OpenGL Piano
 
 ### Vladimir Zhdanov
-### CSCI4229 Computer Graphics, Fall 2018
+### CSCI 4229: Computer Graphics, Fall 2018
 
 ### Dependencies:
 1. OpenGL
 2. GLUT
-3. SDL 1.0 and SDL_mixer
+3. SDL 1.2 and SDL_mixer
 
 ### To run the program: 
-Type "make" and run the piano executable file once its finished compiling.
+Type "make" and run the final executable file (`./final`)once its finished compiling.
 
 
 ### Key bindings
@@ -18,11 +18,15 @@ Type "make" and run the piano executable file once its finished compiling.
 | ESC         | Exit                            |
 | PgDn/PgUp   | Zoom in and out                 |
 | arrows      | Change view angle               |
-| 0           | Reset view angle                |
+| 0           | Reset view angle/zoom           |
 | b           | Toggle axes                     |
 | m           | Toggle light                    |
-| n  		      |	Toggle key highlighting			    |
-| left click  | Play key mouse is hovered over  |
+| ,			  | Toggle light ball visibility    |
+| x/X 		  | Decrease/Increase Light x-pos   |
+| y/Y 		  | Decrease/Increase Light y-pos   |
+| z/Z 		  | Decrease/Increase Light z-pos   |
+| n  		  |	Toggle key highlighting			|
+| mouse click | Play key mouse is hovered over  |
 | -/+         | Decrease/Increase note interval |
 | a           | Play 1st key in interval        |
 | s           | Play 2nd key in interval        |
@@ -35,13 +39,22 @@ Type "make" and run the piano executable file once its finished compiling.
 | l           | Play 9th key in interval        |
 | ;           | Play 10th key in interval       |
 | '           | Play 11th key in interval       |
+| 1			  | Play/Stop song #1 (Little Lamb) |
+| 2			  | Play/Stop song #2 (Ode to Joy)	|
 
 
 ### Features:
-* Full-fledged and accurate grand piano with accurate lighting and textures.
+* Full-fledged grand piano with accurate lighting and textures that can be viewed from any angle.
 * The correct note sound plays for each specified key, and the correct key will move.
+* Each key is animated, and smoothly moves down and returns to its original position when played.
 * Able to play several notes at once (chords) by using multiple audio channels.
-* The ability to click on any note with the mouse and it will animate and play the correct note.
+* The ability to click on any note with the mouse and the piano will move and play the correct note.
+* The piano is able to play several songs on its own including Mary had a Little Lamb and Ode to Joy.
+
+### Other things I did as part of this project:
+* Modified the object.c file provided as part of CSCIx229.h to be able to read .obj files with negative/relative texture/vertex indices.
+* Figured out how to use the stencil buffer to determine which objects were being clicked in order to know which note on the piano to click.
+* Modified an existing .obj grand piano file to remove their key models, and drew my own models of the keys using my own keyboard as a reference for size and position. 
 
 
 ### Outside Files Used:

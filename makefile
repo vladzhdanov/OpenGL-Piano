@@ -1,4 +1,4 @@
-EXE=piano
+EXE=final
 
 # Main target
 all: $(EXE)
@@ -35,7 +35,7 @@ piano.o: piano.c CSCIx229.h
 	g++ -c $(CFLG) $<
 
 #  Link
-piano:piano.o fatal.o loadtexbmp.o project.o errcheck.o printsdl.o object.o
+final:piano.o fatal.o loadtexbmp.o project.o errcheck.o printsdl.o object.o
 	gcc -O3 -o $@ $^  -lSDL -lSDL_mixer -lGLU -lGL -lm
 
 #  Clean

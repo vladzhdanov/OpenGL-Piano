@@ -36,7 +36,7 @@ float shiny   =   1; // Shininess (value)
 float X       =   0; // Light X position
 float Y       = 9.8; // Light Y position
 float Z       = -.5; // Light Z position
-int showlight =   1; // Toggle light visibility
+int showlight =   0; // Toggle light visibility
 
 // Textures
 int tex[5]; // Texture array
@@ -980,16 +980,8 @@ void display()
   }
   //  Display parameters
   glWindowPos2i(5,5);
-  Print("Angle=%d,%d  Dim=%.1f Projection=%s Light=%s Interval=%d",
-    th,ph,dim,"Perpective",light?"On":"Off", interval);
-  if (light){
-    glWindowPos2i(5,65);
-    Print("Direction=%d,%d", Th,Ph);
-    glWindowPos2i(5,45);
-    Print("LocalViewer=%s Position=%.1f,%.1f,%.1f,%.1f", local?"On":"Off", Position[0],Position[1],Position[2],Position[3]);
-    glWindowPos2i(5,25);
-    Print("Ambient=%d  Diffuse=%d Specular=%d Emission=%d Shininess=%.0f",ambient,diffuse,specular,emission,shiny);
- }
+  Print("Angle=%d,%d  Dim=%.1f  Light=%s  Key Highlighing=%s  Key Interval=%d",
+    th,ph,dim,light?"On":"Off", highlight?"On":"Off",interval);
   //  Render the scene and make it visible
   ErrCheck("display");
   glFlush();

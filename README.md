@@ -1,4 +1,4 @@
-# Final Project: OpenGL Piano
+# OpenGL Piano
 
 ### Vladimir Zhdanov
 ### CSCI 4229: Computer Graphics, Fall 2018
@@ -9,7 +9,7 @@
 3. SDL 1.2 and SDL_mixer
 
 ### To run the program: 
-Type "make" and run the final executable file (`./final`)once its finished compiling.
+Type "make" and run the final executable file (`./final`) once its finished compiling.
 
 
 ### Key bindings
@@ -21,11 +21,11 @@ Type "make" and run the final executable file (`./final`)once its finished compi
 | 0           | Reset view angle/zoom           |
 | b           | Toggle axes                     |
 | m           | Toggle light                    |
-| ,			  | Toggle light ball visibility    |
-| x/X 		  | Decrease/Increase Light x-pos   |
-| y/Y 		  | Decrease/Increase Light y-pos   |
-| z/Z 		  | Decrease/Increase Light z-pos   |
-| n  		  |	Toggle key highlighting			|
+| ,			      | Toggle light ball visibility    |
+| x/X 		    | Decrease/Increase Light x-pos   |
+| y/Y 		    | Decrease/Increase Light y-pos   |
+| z/Z 	  	  | Decrease/Increase Light z-pos   |
+| n  		      |	Toggle key highlighting			    |
 | mouse click | Play key mouse is hovered over  |
 | -/+         | Decrease/Increase note interval |
 | a           | Play 1st key in interval        |
@@ -39,8 +39,8 @@ Type "make" and run the final executable file (`./final`)once its finished compi
 | l           | Play 9th key in interval        |
 | ;           | Play 10th key in interval       |
 | '           | Play 11th key in interval       |
-| 1			  | Play/Stop song #1 (Little Lamb) |
-| 2			  | Play/Stop song #2 (Ode to Joy)	|
+| 1			      | Play/Stop song #1 (Little Lamb) |
+| 2			      | Play/Stop song #2 (Ode to Joy)	|
 
 
 ### Features:
